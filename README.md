@@ -1,16 +1,107 @@
-# React + Vite
+# 🏅 Medal Management Frontend (Medal Trotters)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A  frontend web application for an **Olympic Medal Management System**, built using **React  + Bootstrap**.  
+The application provides an intuitive UI to explore Olympic medal data, countries, athletes, sports, analytics, and a future 3D globe visualization.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🚀 Tech Stack
 
-## React Compiler
+- **Frontend:** React
+- **UI Framework:** Bootstrap, React-Bootstrap
+- **Routing:** React Router DOM
+- **Styling:** Dark Netflix-inspired theme
+- **Backend (Planned):** ASP.NET Core Microservices
+- **Database (Planned):** MSSQL / MySQL
+- **Visualization (Planned):** 3D Globe using Three.js
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## ✨ Features (Current)
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+- Netflix-style dark UI
+- Fixed top navigation bar
+- Hero carousel/slider
+- Horizontal category rows (Netflix-style)
+- Pages:
+  - Home
+  - Countries (UI-ready)
+  - Athletes (UI-ready)
+  - Sports (UI-ready)
+  - Analytics (UI-ready)
+  - Globe (placeholder for future 3D visualization)
+- Clean, scalable project structure
+- Mock data (no backend dependency yet)
+
+---
+
+## 📦 Prerequisites
+
+Make sure you have the following installed:
+
+- **Node.js** (v18 or above recommended)  
+  👉 https://nodejs.org/
+- **Git**  
+  👉 https://git-scm.com/
+
+Check versions:
+```bash
+node -v
+npm -v
+
+git --version
+
+🧑‍💻 Clone the Repository
+git clone https://github.com/meghavardhan-git/medal-management-frontend.git
+
+cd medal-management-frontend
+
+▶️ Install Dependencies
+npm install
+▶️ Run the Application
+npm run dev
+You will see output like:
+
+Local: http://localhost:5173/
+Open the URL in your browser to view the app.
+
+📁 Project Structure
+src/
+ ├── components/
+ │    ├── Header.jsx
+ │    ├── HeroSlider.jsx
+ │    └── CategoryRow.jsx
+ ├── pages/
+ │    ├── Home.jsx
+ │    ├── Globe.jsx
+ │    └── (other pages planned)
+ ├── data/
+ │    └── mockData.js
+ ├── App.jsx
+ └── main.jsx
+🔮 Upcoming Features
+Countries page with filters and medal breakdown
+
+Analytics dashboard with charts
+
+JWT-based authentication
+
+Integration with ASP.NET Core APIs
+
+Real Olympic data from external APIs
+
+Interactive 3D globe medal visualization
+
+🤝 Team Collaboration
+This repository currently focuses on frontend development
+
+Backend services will be integrated later
+
+Team members can directly clone, run, and contribute without backend setup
+
+📜 License
+This project is for educational and academic purposes.
+
+⭐ Tip
+If you like the UI direction or plan to extend it, feel free to fork or star the repository.
+
