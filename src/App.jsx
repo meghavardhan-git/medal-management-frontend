@@ -10,9 +10,10 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sports from "./pages/sports";
-import Athelets from "./pages/athelets";
 import SportDetails from "./pages/SportDetails";
 
+import Athletes from "./pages/Athletes";
+import AthleteDetails from "./pages/AthleteDetails";
 
 function App() {
   return (
@@ -29,7 +30,12 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/sports" element={<Sports/>}/>
           <Route path="/sports/:name" element={<SportDetails/>}/>
-          <Route path="/athelets" element={<Athelets/>}/>
+          <Route path="/athletes" element={<Athletes />} />
+          <Route path="/athletes/:name" element={<AthleteDetails />} />
+
+
+          
+
           <Route
   path="/favourites"
   element={
