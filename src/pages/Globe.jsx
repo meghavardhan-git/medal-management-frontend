@@ -54,7 +54,7 @@ const OLYMPIC_DATA = [
   { name: "China", lat: 35.8, lng: 104.1, gold: 303, silver: 226, bronze: 198 },
   { name: "Japan", lat: 36.2, lng: 138.2, gold: 189, silver: 162, bronze: 191 },
   { name: "South Korea", lat: 35.9, lng: 127.7, gold: 109, silver: 100, bronze: 111 },
-  { name: "India", lat: 20.5, lng: 78.9, gold: 10, silver: 10, bronze: 21 },
+  { name: "India", lat: 20.5, lng: 78.9, gold: 10, silver: 10, bronze: 1000 },
   { name: "North Korea", lat: 40.3, lng: 127.5, gold: 16, silver: 18, bronze: 27 },
   { name: "Iran", lat: 32.4, lng: 53.6, gold: 27, silver: 29, bronze: 32 },
   { name: "Kazakhstan", lat: 48.0, lng: 66.9, gold: 15, silver: 25, bronze: 38 },

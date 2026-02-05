@@ -8,6 +8,11 @@ import Analytics from "./pages/Analytics";
 import Favourites from "./pages/Favourites";
 import Login from "./pages/Login";
 import Register from "./pages/Register";
+import ProtectedRoute from "./components/ProtectedRoute";
+import Sports from "./pages/sports";
+import Athelets from "./pages/athelets";
+import SportDetails from "./pages/SportDetails";
+
 
 function App() {
   return (
@@ -16,13 +21,42 @@ function App() {
         <Header />
         <Routes>
           <Route path="/" element={<Home />} />
-          <Route path="/globe" element={<Globe />} />
           <Route path="/countries" element={<Countries/>}/>
           <Route path="/countries/:name" element={<CountryDetails/>}/>
-          <Route path="/analytics" element={<Analytics/>}/>
-          <Route path="/favourites" element={<Favourites/>}/>
+         
+        
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/sports" element={<Sports/>}/>
+          <Route path="/sports/:name" element={<SportDetails/>}/>
+          <Route path="/athelets" element={<Athelets/>}/>
+          <Route
+  path="/favourites"
+  element={
+    <ProtectedRoute>
+      <Favourites />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/analytics"
+  element={
+    <ProtectedRoute>
+      <Analytics />
+    </ProtectedRoute>
+  }
+/>
+
+<Route
+  path="/globe"
+  element={
+    <ProtectedRoute>
+      <Globe />
+    </ProtectedRoute>
+  }
+/>
+
 
         </Routes>
       </div>
