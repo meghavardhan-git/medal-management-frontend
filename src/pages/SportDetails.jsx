@@ -1,7 +1,7 @@
 import { useParams } from "react-router-dom";
 import { Container, Row, Col, Card } from "react-bootstrap";
 import { sports } from "../data/sports";
-import { athletes } from "../data/athelets";
+import { athletes } from "../data/athletes";
 
 function SportDetails() {
   const { name } = useParams();
