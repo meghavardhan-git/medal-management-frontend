@@ -20,8 +20,8 @@ const isLoggedIn = !!localStorage.getItem("token");
             <Nav.Link href="/athletes">Athletes</Nav.Link>
             <Nav.Link href="/sports">Sports</Nav.Link>
             <Nav.Link href="/analytics">Analytics</Nav.Link>
-            <Nav.Link href="/globe">🌍 Globe</Nav.Link>
-            <Nav.Link href="/favourites">⭐ Favourites</Nav.Link>
+            <Nav.Link href="/globe">Globe</Nav.Link>
+            <Nav.Link href="/favourites">Favourites</Nav.Link>
           </Nav>
 
           <Nav>

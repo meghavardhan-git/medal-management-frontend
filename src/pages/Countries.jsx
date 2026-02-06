@@ -1,47 +1,47 @@
-import { useState } from "react";
-import { Container, Row, Col, Card } from "react-bootstrap";
+import { useState, useEffect } from "react";
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-
-// 1. Updated Data with 'total' field
-const countries = [
-  {
-    name: "USA",
-    flag: "https://flagcdn.com/w320/us.png",
-    gold: 39,
-    silver: 41,
-    bronze: 33,
-    total: 113,
-  },
-  {
-    name: "China",
-    flag: "https://flagcdn.com/w320/cn.png",
-    gold: 38,
-    silver: 32,
-    bronze: 18,
-    total: 88,
-  },
-  {
-    name: "Japan",
-    flag: "https://flagcdn.com/w320/jp.png",
-    gold: 27,
-    silver: 14,
-    bronze: 17,
-    total: 58,
-  },
-  {
-    name: "India",
-    flag: "https://flagcdn.com/w320/in.png",
-    gold: 7,
-    silver: 9,
-    bronze: 11,
-    total: 27,
-  },
-];
+import { getCountries } from "../services/api"; 
 
 function Countries() {
-  // 2. Initialize Hooks
+  // 1. Initialize Hooks
   const navigate = useNavigate();
+  const [countries, setCountries] = useState([]);
   const [filter, setFilter] = useState("all");
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // 2. Fetch Data from API
+  useEffect(() => {
+    getCountries()
+      .then((data) => {
+        setCountries(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch countries:", err);
+        setError("Could not load medal statistics.");
+        setLoading(false);
+      });
+  }, []);
+
+  // 3. Handle Loading and Error States
+  if (loading) {
+    return (
+      <Container className="text-center" style={{ paddingTop: "100px" }}>
+        <Spinner animation="border" variant="light" />
+        <p style={{ color: "white", marginTop: "10px" }}>Loading countries...</p>
+      </Container>
+    );
+  }
+
+  if (error) {
+    return (
+      <Container className="text-center" style={{ paddingTop: "100px" }}>
+        <h3 style={{ color: "#ff4d4d" }}>{error}</h3>
+      </Container>
+    );
+  }
 
   return (
     <Container style={{ paddingTop: "100px" }}>
@@ -49,37 +49,37 @@ function Countries() {
         Countries & Medal Statistics
       </h2>
 
-      {/* 3. Filter Buttons UI */}
+      {/* 4. Filter Buttons UI */}
       <div style={{ marginBottom: "20px" }}>
         <button
           onClick={() => setFilter("all")}
-          className="btn btn-outline-light me-2"
+          className={`btn me-2 ${filter === "all" ? "btn-light" : "btn-outline-light"}`}
         >
           All
         </button>
         <button
           onClick={() => setFilter("gold")}
-          className="btn btn-outline-warning me-2"
+          className={`btn me-2 ${filter === "gold" ? "btn-warning" : "btn-outline-warning"}`}
         >
           🥇 Gold
         </button>
         <button
           onClick={() => setFilter("silver")}
-          className="btn btn-outline-secondary me-2"
+          className={`btn me-2 ${filter === "silver" ? "btn-secondary" : "btn-outline-secondary"}`}
         >
           🥈 Silver
         </button>
         <button
           onClick={() => setFilter("bronze")}
-          className="btn btn-outline-danger"
+          className={`btn ${filter === "bronze" ? "btn-danger" : "btn-outline-danger"}`}
         >
           🥉 Bronze
         </button>
       </div>
 
       <Row>
-        {/* 4. Sorting and Mapping Logic */}
-        {countries
+        {/* 5. Sorting and Mapping Logic */}
+        {[...countries] // Spread into new array to avoid mutating state during sort
           .sort((a, b) => {
             if (filter === "gold") return b.gold - a.gold;
             if (filter === "silver") return b.silver - a.silver;
@@ -87,7 +87,7 @@ function Countries() {
             return b.total - a.total; // Default sort by total medals
           })
           .map((country, index) => (
-            <Col md={3} key={index} style={{ marginBottom: "20px" }}>
+            <Col md={3} key={country.id || index} style={{ marginBottom: "20px" }}>
               <Card
                 onClick={() => navigate(`/countries/${country.name}`)}
                 style={{

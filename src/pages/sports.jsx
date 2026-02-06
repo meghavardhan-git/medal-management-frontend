@@ -1,9 +1,36 @@
-import { Container, Row, Col, Card } from "react-bootstrap";
-import { sports } from "../data/sports";
+import { useState, useEffect } from "react"; // Added hooks
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { getSports } from "../services/api"; 
 
 function Sports() {
   const navigate = useNavigate();
+  
+  // 1. Setup State for dynamic data
+  const [sports, setSports] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // 2. Fetch data from backend on component mount
+  useEffect(() => {
+    getSports()
+      .then((data) => {
+        setSports(data);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching sports:", err);
+        setLoading(false);
+      });
+  }, []);
+
+  // Handle Loading State
+  if (loading) {
+    return (
+      <Container className="text-center" style={{ paddingTop: "100px" }}>
+        <Spinner animation="border" variant="light" />
+      </Container>
+    );
+  }
 
   return (
     <Container style={{ paddingTop: "100px", color: "white" }}>
@@ -11,9 +38,14 @@ function Sports() {
 
       <Row>
         {sports.map((sport, index) => (
-          <Col md={3} key={index} style={{ marginTop: "20px" }}>
+          <Col md={3} key={sport.id || index} style={{ marginTop: "20px" }}>
             <Card
-              onClick={() => navigate(`/sports/${sport.name}`)}
+              /* DYNAMIC ROUTING UPDATE: 
+                 This uses the sport's name (or ID) to change the URL. 
+                 Ensure your Route in App.js is defined as: path="/sports/:sportName"
+              */
+              onClick={() => navigate(`/sports/${sport.name}`)} 
+              
               style={{
                 backgroundColor: "#1f1f1f",
                 border: "none",
@@ -37,7 +69,8 @@ function Sports() {
                   {sport.name}
                 </Card.Title>
                 <p style={{ color: "#aaa" }}>
-                  Dominant Countries: {sport.countries.length}
+                  {/* Ensure your API returns 'countries' as an array */}
+                  Dominant Countries: {sport.countries ? sport.countries.length : 0}
                 </p>
               </Card.Body>
             </Card>
