@@ -1,16 +1,33 @@
 import { Container, Row, Col, Card, Form } from "react-bootstrap";
-import { athletes } from "../data/athletes";
 import { sports } from "../data/sports";
 import { countries } from "../data/countries";
 import { useNavigate } from "react-router-dom";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { getAthletes } from "../services/api";
 
 function Athletes() {
   const navigate = useNavigate();
+
+  const [athletes, setAthletes] = useState([]); // 🔹 dynamic data
   const [search, setSearch] = useState("");
   const [sportFilter, setSportFilter] = useState("All");
   const [countryFilter, setCountryFilter] = useState("All");
 
+  // 🔹 Fetch athletes from backend
+  useEffect(() => {
+    const fetchAthletes = async () => {
+      try {
+        const data = await getAthletes();
+        setAthletes(data);
+      } catch (error) {
+        console.error("Error fetching athletes:", error);
+      }
+    };
+
+    fetchAthletes();
+  }, []);
+
+  // 🔹 Apply filters on fetched data
   const filteredAthletes = athletes.filter((a) => {
     return (
       a.name.toLowerCase().includes(search.toLowerCase()) &&
@@ -58,9 +75,10 @@ function Athletes() {
         </Col>
       </Row>
 
+      {/* Athletes Grid */}
       <Row>
-        {filteredAthletes.map((athlete, index) => (
-          <Col md={3} key={index} style={{ marginBottom: "20px" }}>
+        {filteredAthletes.map((athlete) => (
+          <Col md={3} key={athlete.id} style={{ marginBottom: "20px" }}>
             <Card
               onClick={() => navigate(`/athletes/${athlete.name}`)}
               style={{
