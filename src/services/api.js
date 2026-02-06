@@ -9,3 +9,8 @@ export const getSports = async () => {
   const res = await fetch(`${BASE_URL}/sports`);
   return res.json();
 };
+export const getAthletes = async () => {
+  const res = await fetch(`${BASE_URL}/athletes`);
+  return res.json();
+};
+
