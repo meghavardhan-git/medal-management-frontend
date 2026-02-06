@@ -11,6 +11,7 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sports from "./pages/sports";
 import SportDetails from "./pages/SportDetails";
+import "./styles/cards.css";
 import Athletes from "./pages/Athletes";
 import AthleteDetails from "./pages/AthleteDetails";
 import ForgotPassword from "./pages/ForgotPassword";
@@ -38,6 +39,7 @@ function App() {
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
 
+
             {/* Protected routes */}
             <Route
               path="/favourites"
@@ -58,6 +60,24 @@ function App() {
             />
 
             <Route
+              path="/favourites"
+              element={
+                <ProtectedRoute>
+                  <Favourites />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/analytics"
+              element={
+                <ProtectedRoute>
+                  <Analytics />
+                </ProtectedRoute>
+              }
+            />
+
+
+            <Route
               path="/globe"
               element={
                 <ProtectedRoute>
@@ -65,10 +85,10 @@ function App() {
                 </ProtectedRoute>
               }
             />
-          </Routes>
-        </div>
-      </div>
-    </Router>
+          </Routes >
+        </div >
+      </div >
+    </Router >
   );
 }
 

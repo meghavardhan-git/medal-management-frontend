@@ -1,5 +1,5 @@
-import React, { useRef, useEffect, useMemo, useState } from "react";
-import Globe from "react-globe.gl";
+import React, { useRef, useEffect, useMemo, useState, Suspense, lazy } from "react";
+const Globe = lazy(() => import('react-globe.gl'));
 import * as THREE from "three";
 import { useNavigate } from "react-router-dom";
 
@@ -151,10 +151,11 @@ function GlobalMedalView() {
       )}
 
       {/* GLOBE */}
+      <Suspense fallback={<div style={{height:'100vh',display:'flex',alignItems:'center',justifyContent:'center',color:'#fff'}}>Loading globe...</div>}>
       <Globe
         ref={globeEl}
-        globeImageUrl="//unpkg.com/three-globe/example/img/earth-night.jpg"
-        backgroundImageUrl="//unpkg.com/three-globe/example/img/night-sky.png"
+        globeImageUrl="https://unpkg.com/three-globe/example/img/earth-night.jpg"
+        backgroundImageUrl="https://unpkg.com/three-globe/example/img/night-sky.png"
         
         objectsData={barsData}
         objectLat="lat"
@@ -182,6 +183,7 @@ function GlobalMedalView() {
         onObjectHover={setHoveredData}
         objectLabel={null} 
       />
+      </Suspense>
     </div>
   );
 }
