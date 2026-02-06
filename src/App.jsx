@@ -11,7 +11,7 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sports from "./pages/sports";
 import SportDetails from "./pages/SportDetails";
-
+import "./styles/cards.css";
 import Athletes from "./pages/Athletes";
 import AthleteDetails from "./pages/AthleteDetails";
 
@@ -44,7 +44,6 @@ function App() {
     </ProtectedRoute>
   }
 />
-
 <Route
   path="/analytics"
   element={
