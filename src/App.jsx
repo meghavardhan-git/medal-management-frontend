@@ -34,6 +34,7 @@ function App() {
           <Route path="/reset-password" element={<ResetPassword />} />
 
 
+
           {/* PROTECTED ROUTES */}
           <Route
             path="/home"
@@ -117,6 +118,7 @@ function App() {
           />
 
 
+
           {/* PUBLIC ROUTES */}
           <Route path="/home" element={<Home />} />
           <Route path="/countries" element={<Countries />} />
@@ -125,6 +127,15 @@ function App() {
           <Route path="/sports/:name" element={<SportDetails />} />
           <Route path="/athletes" element={<Athletes />} />
           <Route path="/athletes/:name" element={<AthleteDetails />} />
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+
 
           <Route
             path="/analytics"
@@ -134,6 +145,7 @@ function App() {
               </ProtectedRoute>
             }
           />
+
 
 
 
@@ -155,6 +167,8 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+
 
         </Routes>
       </div>
