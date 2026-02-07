@@ -41,8 +41,8 @@ function Login() {
       // ✅ Store JWT token
       localStorage.setItem("token", data.token);
 
-      // 🔥 IMPORTANT: redirect to root
-      navigate("/");
+      // 🔥 IMPORTANT: redirect to home (avoid extra redirect logic)
+      navigate("/home", { replace: true });
     } catch (err) {
       console.error(err);
       setError("Server error. Please try again later.");

@@ -33,6 +33,7 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
+
           {/* PROTECTED ROUTES */}
           <Route
             path="/home"
@@ -115,6 +116,16 @@ function App() {
             }
           />
 
+
+          {/* PUBLIC ROUTES */}
+          <Route path="/home" element={<Home />} />
+          <Route path="/countries" element={<Countries />} />
+          <Route path="/countries/:name" element={<CountryDetails />} />
+          <Route path="/sports" element={<Sports />} />
+          <Route path="/sports/:name" element={<SportDetails />} />
+          <Route path="/athletes" element={<Athletes />} />
+          <Route path="/athletes/:name" element={<AthleteDetails />} />
+
           <Route
             path="/analytics"
             element={
@@ -123,6 +134,28 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+
+
+          {/* PROTECTED ROUTES (only these) */}
+          <Route
+            path="/favourites"
+            element={
+              <ProtectedRoute>
+                <Favourites />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/globe"
+            element={
+              <ProtectedRoute>
+                <Globe />
+              </ProtectedRoute>
+            }
+          />
+
         </Routes>
       </div>
     </Router>
