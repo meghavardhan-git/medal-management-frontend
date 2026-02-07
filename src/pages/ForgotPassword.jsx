@@ -1,9 +1,11 @@
 import { Container, Form, Button, Alert, Card } from "react-bootstrap";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 const API_BASE = "http://localhost:5051/api";
 
 function ForgotPassword() {
+    const navigate = useNavigate();
     const [email, setEmail] = useState("");
     const [message, setMessage] = useState("");
     const [error, setError] = useState("");
@@ -70,6 +72,15 @@ function ForgotPassword() {
                             {loading ? "Sending..." : "Send Reset Link"}
                         </Button>
                     </Form>
+                    <div className="mt-3 text-center">
+                        <Button 
+  variant="link" 
+  className="text-danger text-decoration-none" 
+  onClick={() => navigate('/login')}
+>
+  Back to Login
+</Button>
+                    </div>
                 </Card.Body>
             </Card>
         </Container>

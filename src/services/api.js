@@ -1,4 +1,4 @@
-const BASE_URL = "http://localhost:5051/api";
+const BASE_URL = import.meta?.env?.VITE_API_BASE_URL || "http://localhost:5051/api";
 
 export async function fetchJson(path, options = {}) {
   const controller = new AbortController();

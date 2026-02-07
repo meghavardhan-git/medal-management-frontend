@@ -33,84 +33,29 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password" element={<ResetPassword />} />
 
-          {/* PROTECTED ROUTES */}
-          <Route
-            path="/home"
-            element={
-              <ProtectedRoute>
-                <Home />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/countries"
-            element={
-              <ProtectedRoute>
-                <Countries />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/countries/:name"
-            element={
-              <ProtectedRoute>
-                <CountryDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/sports"
-            element={
-              <ProtectedRoute>
-                <Sports />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/sports/:name"
-            element={
-              <ProtectedRoute>
-                <SportDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/athletes"
-            element={
-              <ProtectedRoute>
-                <Athletes />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/athletes/:name"
-            element={
-              <ProtectedRoute>
-                <AthleteDetails />
-              </ProtectedRoute>
-            }
-          />
-
-          <Route
-            path="/favourites"
-            element={
-              <ProtectedRoute>
-                <Favourites />
-              </ProtectedRoute>
-            }
-          />
-
+          {/* PUBLIC ROUTES */}
+          <Route path="/home" element={<Home />} />
+          <Route path="/countries" element={<Countries />} />
+          <Route path="/countries/:name" element={<CountryDetails />} />
+          <Route path="/sports" element={<Sports />} />
+          <Route path="/sports/:name" element={<SportDetails />} />
+          <Route path="/athletes" element={<Athletes />} />
+          <Route path="/athletes/:name" element={<AthleteDetails />} />
           <Route
             path="/analytics"
             element={
               <ProtectedRoute>
                 <Analytics />
+              </ProtectedRoute>
+            }
+          />
+
+          {/* PROTECTED ROUTES (only these) */}
+          <Route
+            path="/favourites"
+            element={
+              <ProtectedRoute>
+                <Favourites />
               </ProtectedRoute>
             }
           />
