@@ -11,84 +11,121 @@ import Register from "./pages/Register";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Sports from "./pages/sports";
 import SportDetails from "./pages/SportDetails";
-import "./styles/cards.css";
 import Athletes from "./pages/Athletes";
 import AthleteDetails from "./pages/AthleteDetails";
 import ForgotPassword from "./pages/ForgotPassword";
 import ResetPassword from "./pages/ResetPassword";
+import DefaultRoute from "./components/DefaultRoute";
 
 function App() {
   return (
     <Router>
       <div style={{ backgroundColor: "#141414", minHeight: "100vh" }}>
         <Header />
-        <div style={{ paddingTop: "70px" }}>
 
-          <Routes>
-            {/* Public routes */}
-            <Route path="/" element={<Home />} />
-            <Route path="/countries" element={<Countries />} />
-            <Route path="/countries/:name" element={<CountryDetails />} />
-            <Route path="/sports" element={<Sports />} />
-            <Route path="/sports/:name" element={<SportDetails />} />
-            <Route path="/athletes" element={<Athletes />} />
-            <Route path="/athletes/:name" element={<AthleteDetails />} />
+        <Routes>
+          {/* 🔐 DEFAULT ENTRY POINT */}
+          <Route path="/" element={<DefaultRoute />} />
 
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/forgot-password" element={<ForgotPassword />} />
-            <Route path="/reset-password" element={<ResetPassword />} />
+          {/* PUBLIC ROUTES */}
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password" element={<ResetPassword />} />
 
+          {/* PROTECTED ROUTES */}
+          <Route
+            path="/home"
+            element={
+              <ProtectedRoute>
+                <Home />
+              </ProtectedRoute>
+            }
+          />
 
-            {/* Protected routes */}
-            <Route
-              path="/favourites"
-              element={
-                <ProtectedRoute>
-                  <Favourites />
-                </ProtectedRoute>
-              }
-            />
+          <Route
+            path="/countries"
+            element={
+              <ProtectedRoute>
+                <Countries />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
+          <Route
+            path="/countries/:name"
+            element={
+              <ProtectedRoute>
+                <CountryDetails />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/favourites"
-              element={
-                <ProtectedRoute>
-                  <Favourites />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/analytics"
-              element={
-                <ProtectedRoute>
-                  <Analytics />
-                </ProtectedRoute>
-              }
-            />
+          <Route
+            path="/sports"
+            element={
+              <ProtectedRoute>
+                <Sports />
+              </ProtectedRoute>
+            }
+          />
 
+          <Route
+            path="/sports/:name"
+            element={
+              <ProtectedRoute>
+                <SportDetails />
+              </ProtectedRoute>
+            }
+          />
 
-            <Route
-              path="/globe"
-              element={
-                <ProtectedRoute>
-                  <Globe />
-                </ProtectedRoute>
-              }
-            />
-          </Routes >
-        </div >
-      </div >
-    </Router >
+          <Route
+            path="/athletes"
+            element={
+              <ProtectedRoute>
+                <Athletes />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/athletes/:name"
+            element={
+              <ProtectedRoute>
+                <AthleteDetails />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/favourites"
+            element={
+              <ProtectedRoute>
+                <Favourites />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/analytics"
+            element={
+              <ProtectedRoute>
+                <Analytics />
+              </ProtectedRoute>
+            }
+          />
+
+          <Route
+            path="/globe"
+            element={
+              <ProtectedRoute>
+                <Globe />
+              </ProtectedRoute>
+            }
+          />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
