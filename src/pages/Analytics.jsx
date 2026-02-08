@@ -75,5 +75,4 @@ function Analytics() {
     </Container>
   );
 }
-
 export default Analytics;
