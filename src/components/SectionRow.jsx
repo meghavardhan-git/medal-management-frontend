@@ -79,7 +79,7 @@ function SectionRow({ title, items, basePath, explorePath }) {
                   marginBottom: "0",
                 }}
               >
-                {item.label}
+                {item.label || item.name || item.value || "Unknown"}
               </Card.Title>
             </Card.Body>
           </Card>
