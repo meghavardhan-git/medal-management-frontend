@@ -33,4 +33,16 @@ export const getTopGoldAthletes = () => fetchJson("/athletes/top/gold");
 export const getTopSilverAthletes = () => fetchJson("/athletes/top/silver");
 export const getTopBronzeAthletes = () => fetchJson("/athletes/top/bronze");
 export const getSports = () => fetchJson("/sports");
-export const getAthletes = () => fetchJson("/athletes");
+export const getAthletes = async ({
+  page = 1,
+  pageSize = 20,
+  search = "",
+  sort = ""
+} = {}) => {
+  const params = new URLSearchParams({ page, pageSize });
+
+  if (search) params.append("search", search);
+  if (sort) params.append("sort", sort);
+
+  return fetchJson(`/athletes?${params.toString()}`);
+};

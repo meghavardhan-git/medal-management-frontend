@@ -49,7 +49,18 @@ function SectionRow({ title, items, basePath, explorePath }) {
               borderRadius: "8px",
               overflow: "hidden",
             }}
-            onClick={() => navigate(`${basePath}/${encodeURIComponent(item.value)}`)}
+            onClick={() => {
+              // Support object value for compound routes (e.g., {name, sport})
+              if (item.value && typeof item.value === "object") {
+                const name = item.value.name || item.value.label || item.value.value;
+                const sport = item.value.sport || item.value.category;
+                if (name && sport) {
+                  navigate(`${basePath}/${encodeURIComponent(name)}/${encodeURIComponent(sport)}`);
+                  return;
+                }
+              }
+              navigate(`${basePath}/${encodeURIComponent(item.value)}`);
+            }}
           >
             {/* IMAGE LOGIC (IMPORTANT PART) */}
             <Card.Img

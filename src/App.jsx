@@ -40,7 +40,7 @@ function App() {
           <Route path="/sports" element={<Sports />} />
           <Route path="/sports/:name" element={<SportDetails />} />
           <Route path="/athletes" element={<Athletes />} />
-          <Route path="/athletes/:name" element={<AthleteDetails />} />
+          <Route path="/athletes/:name/:sport" element={<AthleteDetails />} />
           <Route
             path="/analytics"
             element={
