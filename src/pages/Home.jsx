@@ -10,6 +10,7 @@ import {
   getTopGoldAthletes,
   getTopSilverAthletes,
   getTopBronzeAthletes,
+  getSports,
 } from "../services/api";
 
 function Home() {
@@ -17,6 +18,7 @@ function Home() {
   const [goldAthletes, setGoldAthletes] = useState([]);
   const [silverAthletes, setSilverAthletes] = useState([]);
   const [bronzeAthletes, setBronzeAthletes] = useState([]);
+  const [sports, setSports] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -25,12 +27,14 @@ function Home() {
       getTopGoldAthletes(),
       getTopSilverAthletes(),
       getTopBronzeAthletes(),
+      getSports(),
     ])
-      .then(([countriesRes, goldA, silverA, bronzeA]) => {
+      .then(([countriesRes, goldA, silverA, bronzeA, sportsRes]) => {
         if (Array.isArray(countriesRes)) setCountries(countriesRes);
         if (Array.isArray(goldA)) setGoldAthletes(goldA);
         if (Array.isArray(silverA)) setSilverAthletes(silverA);
         if (Array.isArray(bronzeA)) setBronzeAthletes(bronzeA);
+        if (Array.isArray(sportsRes)) setSports(sportsRes);
       })
       .catch((err) => console.error("Home load error:", err))
       .finally(() => setLoading(false));
@@ -120,6 +124,18 @@ function Home() {
               }))}
               basePath="/athletes"
               explorePath="/athletes?sort=bronze"
+            />
+
+            {/* Sports Section */}
+            <SectionRow
+              title="Popular Sports"
+              items={sports.map((s) => ({
+                label: s.name || s,
+                value: s.name || s,
+                image: s.image || "/images/fallback-card.png",
+              }))}
+              basePath="/sports"
+              explorePath="/sports"
             />
           </>
         )}

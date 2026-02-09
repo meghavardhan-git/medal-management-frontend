@@ -1,24 +1,33 @@
 import { useState, useEffect, useMemo } from "react";
 import { Container, Row, Col, Spinner } from "react-bootstrap";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { getCountries } from "../services/api"; 
+import { getCountries } from "../services/api";
 import CountryCard from "../components/CountryCard";
-import "../styles/cards.css"; // Ensure path is correct
+import "../styles/cards.css";
 
 function Countries() {
   const navigate = useNavigate();
   const [countries, setCountries] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // 1. Manage Sorting via URL Query Params
-  const [searchParams, setSearchParams] = useSearchParams();
-  const sortBy = searchParams.get("sort") || "all"; 
 
+  const [searchParams, setSearchParams] = useSearchParams();
+  const sortBy = searchParams.get("sort") || "all";
+
+  // ✅ Fetch & normalize backend data
   useEffect(() => {
     getCountries()
       .then((data) => {
-        setCountries(data);
+        const normalized = data.map((c) => ({
+          code: c.noc,                 // normalize noc → code
+          name: c.country,             // normalize country → name
+          gold: c.gold,
+          silver: c.silver,
+          bronze: c.bronze,
+          total: c.gold + c.silver + c.bronze
+        }));
+
+        setCountries(normalized);
         setLoading(false);
       })
       .catch((err) => {
@@ -28,53 +37,82 @@ function Countries() {
       });
   }, []);
 
-  // 2. Derived Sorting Logic (Efficiency & Immutability)
+  // ✅ Sorting logic
   const sortedCountries = useMemo(() => {
-    const sorted = [...countries]; // Create copy to avoid mutation
+    const sorted = [...countries];
+
     if (sortBy === "gold") return sorted.sort((a, b) => b.gold - a.gold);
     if (sortBy === "silver") return sorted.sort((a, b) => b.silver - a.silver);
     if (sortBy === "bronze") return sorted.sort((a, b) => b.bronze - a.bronze);
-    return sorted.sort((a, b) => b.total - a.total); 
+
+    return sorted.sort((a, b) => b.total - a.total);
   }, [countries, sortBy]);
 
   const handleSortChange = (type) => {
     setSearchParams({ sort: type });
   };
 
-  if (loading) return (
-    <Container className="text-center" style={{ paddingTop: "100px" }}>
-      <Spinner animation="border" variant="light" />
-      <p style={{ color: "white", marginTop: "10px" }}>Loading countries...</p>
-    </Container>
-  );
+  // ✅ Loading UI
+  if (loading) {
+    return (
+      <Container className="text-center" style={{ paddingTop: "100px" }}>
+        <Spinner animation="border" variant="light" />
+        <p style={{ color: "white", marginTop: "10px" }}>
+          Loading countries...
+        </p>
+      </Container>
+    );
+  }
+
+  // ✅ Error UI
+  if (error) {
+    return (
+      <Container className="text-center" style={{ paddingTop: "100px" }}>
+        <p style={{ color: "red" }}>{error}</p>
+      </Container>
+    );
+  }
 
   return (
     <Container style={{ paddingTop: "100px" }}>
-      <h2 style={{ color: "white", marginBottom: "30px" }}>Countries & Medal Statistics</h2>
+      <h2 style={{ color: "white", marginBottom: "30px" }}>
+        Countries & Medal Statistics
+      </h2>
 
-      {/* Sorting Controls */}
+      {/* ✅ Sorting Controls */}
       <div style={{ marginBottom: "30px" }}>
         {["all", "gold", "silver", "bronze"].map((type) => (
           <button
             key={type}
             onClick={() => handleSortChange(type)}
-            className={`btn me-2 ${sortBy === type ? "btn-light" : "btn-outline-light"}`}
-            style={{ textTransform: 'capitalize' }}
+            className={`btn me-2 ${
+              sortBy === type ? "btn-light" : "btn-outline-light"
+            }`}
+            style={{ textTransform: "capitalize" }}
           >
-            {type === "all" ? "All" : `${type === "gold" ? "🥇" : type === "silver" ? "🥈" : "🥉"} ${type}`}
+            {type === "all"
+              ? "All"
+              : `${type === "gold" ? "🥇" : type === "silver" ? "🥈" : "🥉"} ${type}`}
           </button>
         ))}
       </div>
 
+      {/* ✅ Country Cards Grid */}
       <Row>
         {sortedCountries.map((country) => (
-          <Col md={3} sm={6} xs={12} key={country.id || country.code} style={{ marginBottom: "30px" }}>
+          <Col
+            key={country.code}
+            md={3}
+            sm={6}
+            xs={12}
+            style={{ marginBottom: "30px" }}
+          >
             <div className="netflix-card-container">
-              <div className="netflix-zoom-card">
-                 <CountryCard
-                  country={country}
-                  onClick={() => navigate(`/countries/${country.code || country.name}`)}
-                />
+              <div
+                className="netflix-zoom-card"
+                onClick={() => navigate(`/countries/${country.code}`)}
+              >
+                <CountryCard country={country} />
               </div>
             </div>
           </Col>

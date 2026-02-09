@@ -54,7 +54,7 @@ const OLYMPIC_DATA = [
   { name: "China", lat: 35.8, lng: 104.1, gold: 303, silver: 226, bronze: 198 },
   { name: "Japan", lat: 36.2, lng: 138.2, gold: 189, silver: 162, bronze: 191 },
   { name: "South Korea", lat: 35.9, lng: 127.7, gold: 109, silver: 100, bronze: 111 },
-  { name: "India", lat: 20.5, lng: 78.9, gold: 10, silver: 10, bronze: 1000 },
+  { name: "India", lat: 20.5, lng: 78.9, gold: 10, silver: 10, bronze: 20 },
   { name: "North Korea", lat: 40.3, lng: 127.5, gold: 16, silver: 18, bronze: 27 },
   { name: "Iran", lat: 32.4, lng: 53.6, gold: 27, silver: 29, bronze: 32 },
   { name: "Kazakhstan", lat: 48.0, lng: 66.9, gold: 15, silver: 25, bronze: 38 },
@@ -87,10 +87,7 @@ function GlobalMedalView() {
   const barsData = useMemo(() => {
     const data = [];
     OLYMPIC_DATA.forEach((country) => {
-      // 1. Spacing logic: Smaller countries need tighter spacing, but 0.6 is a safe global default
       const spacing = 0.6; 
-      
-      // 2. Bar Generation
       data.push({ type: "Gold", val: country.gold, color: "#FFD700", lat: country.lat, lng: country.lng - spacing, country: country.name });
       data.push({ type: "Silver", val: country.silver, color: "#E0E0E0", lat: country.lat, lng: country.lng, country: country.name });
       data.push({ type: "Bronze", val: country.bronze, color: "#CD7F32", lat: country.lat, lng: country.lng + spacing, country: country.name });
@@ -112,7 +109,7 @@ function GlobalMedalView() {
       {/* HEADER */}
       <div style={{ position: "absolute", top: "100px", left: "30px", zIndex: 10, pointerEvents: "none" }}>
         <h1 style={{ color: "#fff", margin: "0 0 5px 0", textShadow: "0 0 10px rgba(255,215,0,0.5)" }}>
-          🌍 Global Medal Tracker
+          Global Medal Tracker
         </h1>
         <p style={{ color: "#aaa", fontSize: "1rem" }}>
           Visualizing data from over 70 nations
@@ -162,10 +159,7 @@ function GlobalMedalView() {
         objectLng="lng"
         objectAltitude={0}
         
-        // Custom Cylinder Logic
         objectThreeObject={(d) => {
-          // Height Multiplier: 0.005 ensures even countries with 10 medals are visible,
-          // but countries with 1000+ don't stretch into space too far.
           const height = Math.max(d.val * 0.01, 0.2); 
           const radius = 0.9; 
           const geometry = new THREE.CylinderGeometry(radius, radius, height, 8);
