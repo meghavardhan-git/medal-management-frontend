@@ -1,157 +1,130 @@
 import HeroSlider from "../components/HeroSlider";
 import SectionRow from "../components/SectionRow";
 import Footer from "../components/Footer";
+import { countryImages } from "../utils/countryImages";
+import { athleteImages, getAthleteImage } from "../utils/athleteImages";
 import { useEffect, useState } from "react";
-import { getTopGoldCountries } from "../services/api";
-import { getTopSilverCountries} from "../services/api";
-import { getTopBronzeCountries} from "../services/api";
-import { getTopGoldAthletes} from "../services/api";
-import { getTopSilverAthletes} from "../services/api";
-import { getTopBronzeAthletes} from "../services/api";
+
+import {
+  getCountries,
+  getTopGoldAthletes,
+  getTopSilverAthletes,
+  getTopBronzeAthletes,
+} from "../services/api";
 
 function Home() {
-  // Static featured data (no images here)
-  const featuredCountries = [
-    { label: "India", value: "IND" },
-    { label: "United States", value: "USA" },
-    { label: "China", value: "CHN" },
-  ];
-
-  const featuredSports = [
-    { label: "Athletics", value: "Athletics" },
-    { label: "Swimming", value: "Swimming" },
-    { label: "Badminton", value: "Badminton" },
-  ];
-
-  const featuredAthletes = [
-    { label: "Neeraj Chopra", value: "Neeraj Chopra" },
-    { label: "Usain Bolt", value: "Usain Bolt" },
-    { label: "PV Sindhu", value: "PV Sindhu" },
-  ];
-
-  const [goldCountries, setGoldCountries] = useState([]);
+  const [countries, setCountries] = useState([]);
+  const [goldAthletes, setGoldAthletes] = useState([]);
+  const [silverAthletes, setSilverAthletes] = useState([]);
+  const [bronzeAthletes, setBronzeAthletes] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [silverCountries, setSilverCountries] = useState([]);
-const [bronzeCountries, setBronzeCountries] = useState([]);
-const [goldAthletes, setGoldAthletes] = useState([]);
-const [silverAthletes, setSilverAthletes] = useState([]);
-const [bronzeAthletes, setBronzeAthletes] = useState([]);
-
-
 
   useEffect(() => {
     Promise.all([
-      getTopGoldCountries(),
-      getTopSilverCountries(),
-      getTopBronzeCountries(),
+      getCountries(),
       getTopGoldAthletes(),
       getTopSilverAthletes(),
       getTopBronzeAthletes(),
     ])
-      .then(([
-        goldCountriesRes,
-        silverCountriesRes,
-        bronzeCountriesRes,
-        goldAthletesRes,
-        silverAthletesRes,
-        bronzeAthletesRes,
-      ]) => {
-        if (Array.isArray(goldCountriesRes)) setGoldCountries(goldCountriesRes);
-        if (Array.isArray(silverCountriesRes)) setSilverCountries(silverCountriesRes);
-        if (Array.isArray(bronzeCountriesRes)) setBronzeCountries(bronzeCountriesRes);
-
-        if (Array.isArray(goldAthletesRes)) setGoldAthletes(goldAthletesRes);
-        if (Array.isArray(silverAthletesRes)) setSilverAthletes(silverAthletesRes);
-        if (Array.isArray(bronzeAthletesRes)) setBronzeAthletes(bronzeAthletesRes);
+      .then(([countriesRes, goldA, silverA, bronzeA]) => {
+        if (Array.isArray(countriesRes)) setCountries(countriesRes);
+        if (Array.isArray(goldA)) setGoldAthletes(goldA);
+        if (Array.isArray(silverA)) setSilverAthletes(silverA);
+        if (Array.isArray(bronzeA)) setBronzeAthletes(bronzeA);
       })
-      .catch((err) => console.error('Failed to load top lists:', err))
+      .catch((err) => console.error("Home load error:", err))
       .finally(() => setLoading(false));
   }, []);
 
+  // ✅ FRONTEND SORTING FOR COUNTRIES
+  const topGoldCountries = [...countries]
+    .sort((a, b) => b.gold - a.gold)
+    .slice(0, 10);
+
+  const topSilverCountries = [...countries]
+    .sort((a, b) => b.silver - a.silver)
+    .slice(0, 10);
+
+  const topBronzeCountries = [...countries]
+    .sort((a, b) => b.bronze - a.bronze)
+    .slice(0, 10);
 
   return (
     <>
-      {/* Hero section */}
       <HeroSlider />
 
-      {/* Main content */}
       <div style={{ padding: "40px" }}>
-                {!loading && (
-          <SectionRow
-            title="Top Gold Medal Countries"
-            items={goldCountries.map(c => ({
-              label: c.name,
-              value: c.code
-            }))}
-            basePath="/countries"
-            explorePath="/countries?sort=gold"
-          />
+        {!loading && (
+          <>
+            <SectionRow
+              title="Top Gold Medal Countries"
+              items={topGoldCountries.map((c) => ({
+                label: c.country,
+                value: c.noc,
+                image: countryImages[c.noc]
+              }))}
+              basePath="/countries"
+              explorePath="/countries?sort=gold"
+            />
+
+            <SectionRow
+              title="Top Silver Medal Countries"
+              items={topSilverCountries.map((c) => ({
+                label: c.country,
+                value: c.noc,
+                image: countryImages[c.noc]
+              }))}
+              basePath="/countries"
+              explorePath="/countries?sort=silver"
+            />
+
+            <SectionRow
+              title="Top Bronze Medal Countries"
+              items={topBronzeCountries.map((c) => ({
+                label: c.country,
+                value: c.noc,
+                image: countryImages[c.noc]
+              }))}
+              basePath="/countries"
+              explorePath="/countries?sort=bronze"
+            />
+
+            <SectionRow
+              title="Top Gold Medal Athletes"
+              items={goldAthletes.map((a) => ({
+                label: a.name,
+                value: a.name,
+                image: a.image || getAthleteImage(a.name)
+              }))}
+              basePath="/athletes"
+              explorePath="/athletes?sort=gold"
+            />
+
+            <SectionRow
+              title="Top Silver Medal Athletes"
+              items={silverAthletes.map((a) => ({
+                label: a.name,
+                value: a.name,
+                image: a.image || getAthleteImage(a.name)
+              }))}
+              basePath="/athletes"
+              explorePath="/athletes?sort=silver"
+            />
+
+            <SectionRow
+              title="Top Bronze Medal Athletes"
+              items={bronzeAthletes.map((a) => ({
+                label: a.name,
+                value: a.name,
+                image: a.image || getAthleteImage(a.name)
+              }))}
+              basePath="/athletes"
+              explorePath="/athletes?sort=bronze"
+            />
+          </>
         )}
-
-        <SectionRow
-  title="Top Silver Medal Countries"
-  items={silverCountries.map(c => ({
-    label: c.name,
-    value: c.code
-  }))}
-  basePath="/countries"
-  explorePath="/countries?sort=silver"
-/>
-
-<SectionRow
-  title="Top Bronze Medal Countries"
-  items={bronzeCountries.map(c => ({
-    label: c.name,
-    value: c.code
-  }))}
-  basePath="/countries"
-  explorePath="/countries?sort=bronze"
-/>
-<SectionRow
-  title="Top Gold Medal Athletes"
-  items={goldAthletes.map(a => ({
-    label: a.name,
-    value: a.name,   // IMPORTANT: name, not id
-    image: a.image
-  }))}
-  basePath="/athletes"
-  explorePath="/athletes?sort=gold"
-/>
-
-
-<SectionRow
-  title="Top Silver Medal Athletes"
-  items={silverAthletes.map(a => ({
-    label: a.name,
-    value: a.name,
-    image: a.image
-  }))}
-  basePath="/athletes"
-  explorePath="/athletes?sort=silver"
-/>
-
-<SectionRow
-  title="Top Bronze Medal Athletes"
-  items={bronzeAthletes.map(a => ({
-    label: a.name,
-    value: a.name,
-    image: a.image
-  }))}
-  basePath="/athletes"
-  explorePath="/athletes?sort=bronze"
-/>
-
-        <SectionRow
-          title="Popular Sports"
-          items={featuredSports}
-          basePath="/sports"
-          explorePath="/sports"
-        />
-
-      
       </div>
 
-      {/* Footer */}
       <Footer />
     </>
   );

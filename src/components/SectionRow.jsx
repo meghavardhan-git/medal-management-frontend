@@ -56,8 +56,8 @@ function SectionRow({ title, items, basePath, explorePath }) {
               variant="top"
               src={
                 basePath === "/countries"
-                  ? getFlagUrl(item.value)
-                  : item.image || "/images/fallback-card.png"
+                  ? (item.image || getFlagUrl(item.value))
+                  : (item.image || "/images/fallback-card.png")
               }
               alt={item.label}
               style={{
@@ -65,9 +65,10 @@ function SectionRow({ title, items, basePath, explorePath }) {
                 objectFit: "cover",
               }}
               loading="lazy"
-              onError={(e) =>
-                (e.target.src = "/images/fallback-card.png")
-              }
+              onError={(e) => {
+                e.target.onerror = null;
+                e.target.src = "/images/fallback-card.png";
+              }}
             />
 
             <Card.Body>
