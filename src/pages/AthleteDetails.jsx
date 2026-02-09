@@ -5,16 +5,17 @@ import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import "../styles//AthleteDetails.css"; 
 
 function AthleteDetails() {
-  const { name } = useParams();
+  const { name, sport } = useParams();
   const navigate = useNavigate();
   const [athlete, setAthlete] = useState(null);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    fetchJson(`/athlete-details/${encodeURIComponent(name)}`)
+    const pathName = encodeURIComponent(name || "") + (sport ? `/${encodeURIComponent(sport)}` : "");
+    fetchJson(`/athlete-details/${pathName}`)
       .then(setAthlete)
       .catch(err => setError(err.message));
-  }, [name]);
+  }, [name, sport]);
 
   if (error) return (
     <Container className="text-center" style={{ paddingTop: "150px" }}>

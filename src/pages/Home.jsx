@@ -97,7 +97,7 @@ function Home() {
               title="Top Gold Medal Athletes"
               items={goldAthletes.map((a) => ({
                 label: a.name,
-                value: a.name,
+                value: { name: a.name, sport: a.sport },
                 image: a.image || getAthleteImage(a.name)
               }))}
               basePath="/athletes"
@@ -108,7 +108,7 @@ function Home() {
               title="Top Silver Medal Athletes"
               items={silverAthletes.map((a) => ({
                 label: a.name,
-                value: a.name,
+                value: { name: a.name, sport: a.sport },
                 image: a.image || getAthleteImage(a.name)
               }))}
               basePath="/athletes"
@@ -119,7 +119,7 @@ function Home() {
               title="Top Bronze Medal Athletes"
               items={bronzeAthletes.map((a) => ({
                 label: a.name,
-                value: a.name,
+                value: { name: a.name, sport: a.sport },
                 image: a.image || getAthleteImage(a.name)
               }))}
               basePath="/athletes"
