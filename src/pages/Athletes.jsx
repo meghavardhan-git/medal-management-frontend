@@ -1,55 +1,56 @@
-import { Container, Row, Col, Card, Form } from "react-bootstrap";
+import { Container, Row, Col, Card, Form, Button, Spinner } from "react-bootstrap";
 import { sports } from "../data/sports";
 import { countries } from "../data/countries";
-import { useState, useEffect, useMemo } from "react"; // Fixed duplicate imports
-import { useNavigate, useSearchParams } from "react-router-dom"; // Combined here
+import { useState, useEffect } from "react";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAthletes } from "../services/api";
 
 function Athletes() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const sortBy = searchParams.get("sort"); // gold | silver | bronze | null
+  const sortBy = searchParams.get("sort");
 
+  // State
   const [athletes, setAthletes] = useState([]);
+  const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [sportFilter, setSportFilter] = useState("All");
   const [countryFilter, setCountryFilter] = useState("All");
-
-  // 1. Fetch athletes from backend
+  const [loading, setLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
   useEffect(() => {
     const fetchAthletes = async () => {
+      setLoading(true);
       try {
-        const data = await getAthletes();
-        setAthletes(data);
+        const response = await getAthletes({ 
+          page, 
+          search, 
+          sport: sportFilter, 
+          country: countryFilter,
+          sort: sortBy 
+        });
+
+        const newAthletes = response.data;
+
+        setAthletes(prev => (page === 1 ? newAthletes : [...prev, ...newAthletes]));
+        
+        if (newAthletes.length < 10) setHasMore(false);
+        else setHasMore(true);
+
       } catch (error) {
         console.error("Error fetching athletes:", error);
+      } finally {
+        setLoading(false);
       }
     };
+
     fetchAthletes();
-  }, []);
+  }, [page, search, sportFilter, countryFilter, sortBy]);
 
-  // 2. Sort and Filter Logic (Combined for performance)
-  const processedAthletes = useMemo(() => {
-    // Start with a copy to avoid mutating state
-    let result = [...athletes];
-
-    // Apply Sorting based on Query Param
-    if (sortBy === "gold") {
-      result.sort((a, b) => (b.gold || 0) - (a.gold || 0));
-    } else if (sortBy === "silver") {
-      result.sort((a, b) => (b.silver || 0) - (a.silver || 0));
-    } else if (sortBy === "bronze") {
-      result.sort((a, b) => (b.bronze || 0) - (a.bronze || 0));
-    }
-
-    // Apply Search and Category Filters
-    return result.filter((a) => {
-      const matchesSearch = a.name.toLowerCase().includes(search.toLowerCase());
-      const matchesSport = sportFilter === "All" || a.sport === sportFilter;
-      const matchesCountry = countryFilter === "All" || a.country === countryFilter;
-      return matchesSearch && matchesSport && matchesCountry;
-    });
-  }, [athletes, sortBy, search, sportFilter, countryFilter]);
+  const handleFilterChange = (setter, value) => {
+    setter(value);
+    setPage(1); 
+  };
 
   return (
     <Container style={{ paddingTop: "100px", color: "white" }}>
@@ -61,7 +62,7 @@ function Athletes() {
           <Form.Control
             placeholder="Search athlete..."
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleFilterChange(setSearch, e.target.value)}
             style={{ backgroundColor: "#2a2a2a", border: "none", color: "white" }}
           />
         </Col>
@@ -69,10 +70,10 @@ function Athletes() {
         <Col md={4} className="mb-2">
           <Form.Select
             value={sportFilter}
-            onChange={(e) => setSportFilter(e.target.value)}
+            onChange={(e) => handleFilterChange(setSportFilter, e.target.value)}
             style={{ backgroundColor: "#2a2a2a", border: "none", color: "white" }}
           >
-            <option>All Sports</option>
+            <option value="All">All Sports</option>
             {sports.map((s, i) => (
               <option key={i} value={s.name}>{s.name}</option>
             ))}
@@ -82,10 +83,10 @@ function Athletes() {
         <Col md={4} className="mb-2">
           <Form.Select
             value={countryFilter}
-            onChange={(e) => setCountryFilter(e.target.value)}
+            onChange={(e) => handleFilterChange(setCountryFilter, e.target.value)}
             style={{ backgroundColor: "#2a2a2a", border: "none", color: "white" }}
           >
-            <option>All Countries</option>
+            <option value="All">All Countries</option>
             {countries.map((c, i) => (
               <option key={i} value={c.code}>{c.code}</option>
             ))}
@@ -93,47 +94,51 @@ function Athletes() {
         </Col>
       </Row>
 
-      {/* Athletes Grid */}
+      {/* Grid */}
       <Row>
-        {processedAthletes.length > 0 ? (
-          processedAthletes.map((athlete) => (
-            <Col md={3} sm={6} key={athlete.id} style={{ marginBottom: "25px" }}>
-              <Card
-                className="netflix-card" // Added the hover class
-                onClick={() => navigate(`/athletes/${encodeURIComponent(athlete.name)}`)}
-                style={{
-                  backgroundColor: "#1f1f1f",
-                  border: "none",
-                  cursor: "pointer",
-                  borderRadius: "8px",
-                  overflow: "hidden"
-                }}
-              >
-                <Card.Img
-                  variant="top"
-                  src={athlete.image || "/images/fallback-athlete.png"}
-                  style={{ height: "200px", objectFit: "cover" }}
-                />
-                <Card.Body>
-                  <Card.Title style={{ color: "white", fontSize: "1.1rem" }}>
-                    {athlete.name}
-                  </Card.Title>
-                  <p style={{ color: "#aaa", fontSize: "0.9rem", marginBottom: "5px" }}>
-                    {athlete.sport} • {athlete.country}
-                  </p>
-                  <div style={{ fontSize: "0.85rem" }}>
-                    🥇 {athlete.gold || 0} 🥈 {athlete.silver || 0} 🥉 {athlete.bronze || 0}
-                  </div>
-                </Card.Body>
-              </Card>
-            </Col>
-          ))
-        ) : (
-          <Col className="text-center mt-5">
-            <p style={{ color: "#777" }}>No athletes found matching your criteria.</p>
+        {athletes.map((athlete, idx) => (
+          <Col md={3} sm={6} key={athlete.id || athlete.name || idx} style={{ marginBottom: "25px" }}>
+            <Card
+              className="netflix-card"
+              onClick={() => navigate(`/athletes/${encodeURIComponent(athlete.name)}/${encodeURIComponent(athlete.sport)}`)}
+              style={{ backgroundColor: "#1f1f1f", border: "none", cursor: "pointer" }}
+            >
+              <Card.Img 
+                variant="top" 
+                src={athlete.image || "/images/fallback-athlete.png"} 
+                style={{ height: "200px", objectFit: "cover" }} 
+              />
+              <Card.Body>
+                <Card.Title style={{ color: "white" }}>{athlete.name}</Card.Title>
+                <p style={{ color: "#aaa", fontSize: "0.9rem" }}>{athlete.sport} • {athlete.country}</p>
+                <div>🥇 {athlete.gold || 0} 🥈 {athlete.silver || 0} 🥉 {athlete.bronze || 0}</div>
+              </Card.Body>
+            </Card>
           </Col>
-        )}
+        ))}
       </Row>
+
+      {/* Loading & Pagination */}
+      <div className="text-center mt-4 mb-5">
+        {loading && <Spinner animation="border" variant="danger" className="mb-3" />}
+        
+        {!loading && hasMore && (
+          <Button 
+            variant="outline-light" 
+            onClick={() => setPage(prev => prev + 1)}
+          >
+            Load More
+          </Button>
+        )}
+
+        {!hasMore && athletes.length > 0 && (
+          <p style={{ color: "#777" }}>You've reached the end of the list.</p>
+        )}
+        
+        {!loading && athletes.length === 0 && (
+          <p style={{ color: "#777" }}>No athletes found.</p>
+        )}
+      </div>
     </Container>
   );
 }
