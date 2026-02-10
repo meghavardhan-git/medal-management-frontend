@@ -1,7 +1,8 @@
 import { Container, Form, Button, Alert } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
-
+import "../styles/Login.css";
+import loginVideo from "/Login.mp4";
 const API_BASE = "http://localhost:5051/api";
 
 function Login() {
@@ -32,19 +33,13 @@ function Login() {
       if (!response.ok) {
         const msg = await response.text();
         setError(msg || "Invalid email or password");
-        setLoading(false);
         return;
       }
 
       const data = await response.json();
-
-      // ✅ Store JWT token
       localStorage.setItem("token", data.token);
-
-      // 🔥 IMPORTANT: redirect to home (avoid extra redirect logic)
       navigate("/home", { replace: true });
     } catch (err) {
-      console.error(err);
       setError("Server error. Please try again later.");
     } finally {
       setLoading(false);
@@ -52,82 +47,79 @@ function Login() {
   };
 
   return (
-    <Container
-      className="d-flex justify-content-center"
-      style={{
-        paddingTop: "160px",
-        maxWidth: "400px",
-        color: "white",
-      }}
-    >
-      <div style={{ width: "100%" }}>
-        <h2 className="mb-4 text-center">Login</h2>
+    <div className="login-page">
+      {/* Background Video */}
+      <video
+        className="bg-video"
+        autoPlay
+        loop
+        muted
+        playsInline
+        preload="auto"
+      >
+        <source src={loginVideo}  type="video/mp4" />
+        Your browser does not support the video tag.
+      </video>
 
-        {error && <Alert variant="danger">{error}</Alert>}
+      <Container className="login-container">
+        <div className="login-card">
+          <h2 className="text-center mb-4">Login</h2>
 
-        <Form onSubmit={handleLogin}>
-          <Form.Group className="mb-3">
-            <Form.Label>Email</Form.Label>
-            <Form.Control
-              type="email"
-              placeholder="Enter email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              required
-            />
-          </Form.Group>
+          {error && <Alert variant="danger">{error}</Alert>}
 
-          <Form.Group className="mb-3">
-            <Form.Label>Password</Form.Label>
-            <Form.Control
-              type="password"
-              placeholder="Enter password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </Form.Group>
+          <Form onSubmit={handleLogin}>
+            <Form.Group className="mb-3">
+              <Form.Label>Email</Form.Label>
+              <Form.Control
+                type="email"
+                placeholder="Enter email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-          <Button
-            type="submit"
-            variant="danger"
-            className="w-100"
-            disabled={loading}
-          >
-            {loading ? "Logging in..." : "Login"}
-          </Button>
-        </Form>
+            <Form.Group className="mb-3">
+              <Form.Label>Password</Form.Label>
+              <Form.Control
+                type="password"
+                placeholder="Enter password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </Form.Group>
 
-        {/* Forgot password */}
-        <div className="text-center mt-3">
-          <span
-            style={{
-              color: "#ff4d4d",
-              cursor: "pointer",
-              textDecoration: "underline",
-              fontSize: "14px",
-            }}
-            onClick={() => navigate("/forgot-password")}
-          >
-            Forgot Password?
-          </span>
+            <Button
+              type="submit"
+              variant="danger"
+              className="w-100"
+              disabled={loading}
+            >
+              {loading ? "Logging in..." : "Login"}
+            </Button>
+          </Form>
+
+          <div className="text-center mt-3">
+            <span
+              className="forgot-link"
+              onClick={() => navigate("/forgot-password")}
+            >
+              Forgot Password?
+            </span>
+          </div>
+
+          <div className="text-center mt-2">
+            <span
+              className="register-link"
+              onClick={() => navigate("/register")}
+            >
+              Don’t have an account? Register
+            </span>
+          </div>
         </div>
-
-        {/* Register */}
-        <div className="text-center mt-2">
-          <span
-            style={{
-              color: "#ccc",
-              cursor: "pointer",
-              fontSize: "14px",
-            }}
-            onClick={() => navigate("/register")}
-          >
-            Don’t have an account? Register
-          </span>
-        </div>
-      </div>
-    </Container>
+      </Container>
+    </div>
   );
 }
 
