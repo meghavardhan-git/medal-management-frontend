@@ -46,3 +46,9 @@ export const getAthletes = async ({
 
   return fetchJson(`/athletes?${params.toString()}`);
 };
+
+export const getCountryByNoc = (noc) =>
+  fetchJson(`/countries`);
+
+export const getCountrySummary = (noc) =>
+  fetchJson(`/countries/${noc}/summary`);

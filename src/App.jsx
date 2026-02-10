@@ -36,7 +36,7 @@ function App() {
           {/* PUBLIC ROUTES */}
           <Route path="/home" element={<Home />} />
           <Route path="/countries" element={<Countries />} />
-          <Route path="/countries/:name" element={<CountryDetails />} />
+          <Route path="/countries/:noc" element={<CountryDetails />} />
           <Route path="/sports" element={<Sports />} />
           <Route path="/sports/:name" element={<SportDetails />} />
           <Route path="/athletes" element={<Athletes />} />
