@@ -52,3 +52,6 @@ export const getCountryByNoc = (noc) =>
 
 export const getCountrySummary = (noc) =>
   fetchJson(`/countries/${noc}/summary`);
+
+export const getSportDetails = async (sport) =>
+  fetchJson(`/sports/${encodeURIComponent(sport)}`);

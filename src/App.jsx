@@ -38,7 +38,7 @@ function App() {
           <Route path="/countries" element={<Countries />} />
           <Route path="/countries/:noc" element={<CountryDetails />} />
           <Route path="/sports" element={<Sports />} />
-          <Route path="/sports/:name" element={<SportDetails />} />
+          <Route path="/sports/:sport" element={<SportDetails />} />
           <Route path="/athletes" element={<Athletes />} />
           <Route path="/athletes/:name/:sport" element={<AthleteDetails />} />
           <Route

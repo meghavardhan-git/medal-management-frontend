@@ -1,81 +1,119 @@
-import { useState, useEffect } from "react"; // Added hooks
-import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { useEffect, useState } from "react";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Spinner,
+  Form,
+} from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
-import { getSports } from "../services/api"; 
+import { getSports } from "../services/api";
+import "../styles/cards.css";
+import "../styles/searchBar.css";
 
 function Sports() {
-  const navigate = useNavigate();
-  
-  // 1. Setup State for dynamic data
   const [sports, setSports] = useState([]);
+  const [filteredSports, setFilteredSports] = useState([]);
+  const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(true);
 
-  // 2. Fetch data from backend on component mount
+  const navigate = useNavigate();
+
+  // 🔹 Fetch sports
   useEffect(() => {
     getSports()
       .then((data) => {
-        setSports(data);
-        setLoading(false);
+        if (Array.isArray(data)) {
+          setSports(data);
+          setFilteredSports(data);
+        }
       })
-      .catch((err) => {
-        console.error("Error fetching sports:", err);
-        setLoading(false);
-      });
+      .catch((err) => console.error("Failed to load sports:", err))
+      .finally(() => setLoading(false));
   }, []);
 
-  // Handle Loading State
+  // 🔍 Search filter
+  useEffect(() => {
+    const filtered = sports.filter((s) =>
+      s.sport.toLowerCase().includes(search.toLowerCase())
+    );
+    setFilteredSports(filtered);
+  }, [search, sports]);
+
   if (loading) {
     return (
-      <Container className="text-center" style={{ paddingTop: "100px" }}>
-        <Spinner animation="border" variant="light" />
-      </Container>
+      <div className="loader-container">
+        <Spinner animation="border" variant="danger" />
+      </div>
     );
   }
 
   return (
-    <Container style={{ paddingTop: "100px", color: "white" }}>
-      <h2>Sports</h2>
+    <Container style={{ paddingTop: "100px", paddingBottom: "60px" }}>
+      <h2 className="text-white mb-4">Sports</h2>
+
+      {/* 🔍 Search bar */}
+      <Form.Control
+        placeholder="Search sport..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        className="mb-4"
+        style={{
+          backgroundColor: "#2a2a2a",
+          border: "none",
+          color: "white",
+        }}
+      />
 
       <Row>
-        {sports.map((sport, index) => (
-          <Col md={3} key={sport.id || index} style={{ marginTop: "20px" }}>
+        {filteredSports.map((s) => (
+          <Col
+            md={3}
+            sm={6}
+            xs={12}
+            key={s.sport}
+            className="mb-4 netflix-card-container"
+          >
+            {/* Netflix zoom card */}
             <Card
-              /* DYNAMIC ROUTING UPDATE: 
-                 This uses the sport's name (or ID) to change the URL. 
-                 Ensure your Route in App.js is defined as: path="/sports/:sportName"
-              */
-              onClick={() => navigate(`/sports/${sport.name}`)} 
-              
-              style={{
-                backgroundColor: "#1f1f1f",
-                border: "none",
-                cursor: "pointer",
-                transition: "transform 0.3s",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.transform = "scale(1.05)")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.transform = "scale(1)")
+              className="netflix-zoom-card"
+              onClick={() =>
+                navigate(`/sports/${encodeURIComponent(s.sport)}`)
               }
             >
               <Card.Img
-                variant="top"
-                src={sport.image}
-                style={{ height: "150px", objectFit: "cover" }}
+                src="/images/fallback-card.png"
+                alt={s.sport}
+                style={{
+                  height: "160px",
+                  objectFit: "cover",
+                }}
+                onError={(e) => {
+                  e.target.src = "/images/fallback-card.png";
+                }}
               />
-              <Card.Body>
-                <Card.Title style={{ color: "white" }}>
-                  {sport.name}
+
+              <Card.Body
+                style={{
+                  backgroundColor: "#1f1f1f",
+                  padding: "12px",
+                }}
+              >
+                <Card.Title
+                  className="text-white text-center"
+                  style={{ fontSize: "1rem", marginBottom: 0 }}
+                >
+                  {s.sport}
                 </Card.Title>
-                <p style={{ color: "#aaa" }}>
-                  {/* Ensure your API returns 'countries' as an array */}
-                  Dominant Countries: {sport.countries ? sport.countries.length : 0}
-                </p>
               </Card.Body>
             </Card>
           </Col>
         ))}
+
+        {filteredSports.length === 0 && (
+          <p className="text-muted mt-4">No sports found.</p>
+        )}
       </Row>
     </Container>
   );

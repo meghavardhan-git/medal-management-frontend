@@ -130,8 +130,8 @@ function Home() {
             <SectionRow
               title="Popular Sports"
               items={sports.map((s) => ({
-                label: s.name || s,
-                value: s.name || s,
+                label: s.sport || s,
+                value: s.sport || s,
                 image: s.image || "/images/fallback-card.png",
               }))}
               basePath="/sports"

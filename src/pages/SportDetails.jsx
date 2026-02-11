@@ -1,55 +1,190 @@
-import { useParams } from "react-router-dom";
-import { Container, Row, Col, Card } from "react-bootstrap";
-import { sports } from "../data/sports";
-import { athletes } from "../data/athletes";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+
+import { Pie, Bar } from "react-chartjs-2";
+import {
+  Chart as ChartJS,
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement,
+} from "chart.js";
+
+import { getSportDetails } from "../services/api";
+import { countryImages } from "../utils/countryImages";
+import "../styles/cards.css";
+import { color } from "chart.js/helpers";
+
+ChartJS.register(
+  ArcElement,
+  Tooltip,
+  Legend,
+  CategoryScale,
+  LinearScale,
+  BarElement
+);
 
 function SportDetails() {
-  const { name } = useParams();
+  const { sport } = useParams();
+  const navigate = useNavigate();
 
-  const sport = sports.find((s) => s.name === name);
-  const sportAthletes = athletes.filter(
-    (a) => a.sport === name
-  );
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  if (!sport) {
+  useEffect(() => {
+    getSportDetails(sport)
+      .then(setData)
+      .catch((err) => console.error("Sport details error:", err))
+      .finally(() => setLoading(false));
+  }, [sport]);
+
+  if (loading) {
     return (
-      <Container style={{ paddingTop: "100px", color: "white" }}>
-        <h3>Sport not found</h3>
-      </Container>
+      <div className="loader-container">
+        <Spinner animation="border" variant="danger" />
+      </div>
     );
   }
 
+  if (!data) return null;
+
+  // =======================
+  // PIE: Medal distribution
+  // =======================
+  const totalGold = data.topCountries.reduce((a, c) => a + c.gold, 0);
+  const totalSilver = data.topCountries.reduce((a, c) => a + c.silver, 0);
+  const totalBronze = data.topCountries.reduce((a, c) => a + c.bronze, 0);
+
+  const pieData = {
+    labels: ["Gold", "Silver", "Bronze"],
+    datasets: [
+      {
+        data: [totalGold, totalSilver, totalBronze],
+        backgroundColor: ["#FFD700", "#C0C0C0", "#CD7F32"],
+        borderWidth: 0,
+      },
+    ],
+  };
+
+  // =======================
+  // BAR: Country comparison
+  // =======================
+  const barData = {
+    labels: data.topCountries.map((c) => c.country),
+    datasets: [
+      {
+        label: "Gold",
+        data: data.topCountries.map((c) => c.gold),
+        backgroundColor: "#FFD700",
+      },
+      {
+        label: "Silver",
+        data: data.topCountries.map((c) => c.silver),
+        backgroundColor: "#C0C0C0",
+      },
+      {
+        label: "Bronze",
+        data: data.topCountries.map((c) => c.bronze),
+        backgroundColor: "#CD7F32",
+      },
+    ],
+  };
+
   return (
-    <Container style={{ paddingTop: "100px", color: "white" }}>
-      <h1>{sport.name}</h1>
+    <Container style={{ paddingTop: "100px", paddingBottom: "60px" }}>
+      <h2 className="text-white mb-4">{sport}</h2>
 
-      <h4 style={{ marginTop: "20px" }}>Dominant Countries</h4>
-      <ul>
-        {sport.countries.map((c, i) => (
-          <li key={i}>{c}</li>
-        ))}
-      </ul>
+      {/* =======================
+           CHARTS
+         ======================= */}
+      <Row className="mb-5">
+        <Col md={5}>
+          <h5 className="text-center text-danger mb-3">
+            Medal Distribution
+          </h5>
+          <Pie data={pieData} />
+        </Col>
 
-      <h4 style={{ marginTop: "30px" }}>Athletes</h4>
+        <Col md={7}>
+          <h5 className="text-center text-danger mb-3">
+            Top Countries Comparison
+          </h5>
+          <Bar
+            data={barData}
+            options={{
+              responsive: true,
+              plugins: { legend: { position: "bottom" } },
+            }}
+          />
+        </Col>
+      </Row>
 
-      <Row>
-        {sportAthletes.map((athlete, index) => (
-          <Col md={3} key={index} style={{ marginTop: "20px" }}>
+      {/* =======================
+           TOP COUNTRIES
+         ======================= */}
+      <h4 className="text-white mb-3">Top Countries</h4>
+      <Row className="mb-5">
+        {data.topCountries.map((c) => (
+          <Col md={3} sm={6} key={c.noc} className="mb-4 netflix-card-container">
             <Card
-              style={{
-                backgroundColor: "#1f1f1f",
-                border: "none",
-                color: "white",
-              }}
+              className="netflix-zoom-card"
+              onClick={() => navigate(`/countries/${c.noc}`)}
             >
               <Card.Img
-                variant="top"
-                src={athlete.image}
+                src={countryImages[c.noc]}
+                onError={(e) =>
+                  (e.target.src = "/images/fallback-flag.png")
+                }
                 style={{ height: "150px", objectFit: "cover" }}
               />
               <Card.Body>
-                <Card.Title>{athlete.name}</Card.Title>
-                <p>{athlete.country}</p>
+                <Card.Title className="text-white text-center">
+                  {c.country}
+                </Card.Title>
+                <p className="text-center mb-0" style={{ color: "chocolate" }}>
+                  🥇 {c.gold} 🥈 {c.silver} 🥉 {c.bronze}
+                </p>
+              </Card.Body>
+            </Card>
+          </Col>
+        ))}
+      </Row>
+
+      {/* =======================
+           TOP ATHLETES
+         ======================= */}
+      <h4 className="text-white mb-3">Top Athletes</h4>
+      <Row>
+        {data.topAthletes.map((a) => (
+          <Col md={3} sm={6} key={a.name} className="mb-4 netflix-card-container">
+            <Card
+              className="netflix-zoom-card"
+              onClick={() =>
+                navigate(
+                  `/athletes/${encodeURIComponent(a.name)}/${encodeURIComponent(
+                    sport
+                  )}`
+                )
+              }
+            >
+              <Card.Img
+                src={a.image || "/images/fallback-card.png"}
+                onError={(e) =>
+                  (e.target.src = "/images/fallback-card.png")
+                }
+                style={{ height: "150px", objectFit: "cover" }}
+              />
+              <Card.Body>
+                <Card.Title className="text-white">
+                  {a.name}
+                </Card.Title>
+                <p className="text-muted mb-1">{a.country}</p>
+                <p className="mb-0" style={{ color: "chocolate" }}>
+                  🥇 {a.gold} 🥈 {a.silver} 🥉 {a.bronze}
+                </p>
               </Card.Body>
             </Card>
           </Col>

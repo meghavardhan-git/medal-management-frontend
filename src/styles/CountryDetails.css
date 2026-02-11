@@ -118,7 +118,7 @@ body {
 }
 
 /* 8. Button - Brightness to grab attention */
-.ai-button {
+.ai-button  {
   background: #dc3545 !important;
   border: none !important;
   padding: 12px 30px !important;
@@ -133,12 +133,3 @@ body {
   box-shadow: 0 6px 20px rgba(220, 53, 69, 0.4) !important;
 }
 
-.me-3 mb-3{
-      background: #dc3545 !important;
-  border: none !important;
-  padding: 12px 30px !important;
-  border-radius: 12px !important;
-  font-weight: 700 !important;
-  letter-spacing: 0.5px;
-  box-shadow: 0 4px 15px rgba(220, 53, 69, 0.3) !important;
-}
