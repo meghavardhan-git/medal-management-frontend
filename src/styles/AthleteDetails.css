@@ -1,29 +1,37 @@
+/* ===== Page Wrapper ===== */
 .athlete-detail-page {
   min-height: 100vh;
   padding-top: 120px;
   padding-bottom: 60px;
-  background-color: #141414; /* Solid dark background */
-  color: #ffffff !important;
+  background-color: #141414;
+  color: #ffffff;
 }
 
+/* ===== Back Button ===== */
 .back-button {
   color: #e50914 !important;
   text-decoration: none !important;
   font-weight: 600;
-  margin-bottom: 20px;
+  margin-bottom: 25px;
   display: inline-block;
 }
 
+.back-button:hover {
+  text-decoration: underline !important;
+}
+
+/* ===== Hero Section ===== */
 .athlete-hero-section {
   background: #1f1f1f;
   padding: 50px;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+  border-radius: 16px;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);
 }
 
+/* ===== Image ===== */
 .athlete-image-wrapper {
   border: 4px solid #e50914;
-  border-radius: 15px;
+  border-radius: 16px;
   overflow: hidden;
   display: inline-block;
 }
@@ -32,44 +40,48 @@
   width: 100%;
   max-width: 300px;
   height: auto;
-  display: block;
   object-fit: cover;
+  display: block;
 }
 
+/* ===== Title & Meta ===== */
 .athlete-name-title {
-  font-size: 3.5rem;
+  font-size: 3.2rem;
   font-weight: 900;
-  text-transform: capitalize;
   margin-bottom: 10px;
-  color: #ffffff !important;
 }
 
 .athlete-meta-info {
-  margin-bottom: 25px;
-  font-size: 1.2rem;
   display: flex;
   align-items: center;
-  gap: 15px;
+  gap: 12px;
+  font-size: 1.2rem;
+  margin-bottom: 25px;
 }
 
 .sport-badge {
   background: #e50914;
-  padding: 5px 15px;
-  border-radius: 4px;
+  padding: 6px 16px;
+  border-radius: 6px;
   font-weight: bold;
   font-size: 0.9rem;
 }
 
+.country-text {
+  color: #cccccc;
+}
+
+/* ===== Medals ===== */
 .medal-grid {
   display: flex;
-  gap: 20px;
+  gap: 18px;
   margin-bottom: 35px;
 }
 
 .medal-item {
-  background: rgba(255, 255, 255, 0.1);
-  padding: 10px 20px;
-  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.08);
+  padding: 14px 22px;
+  border-radius: 10px;
   display: flex;
   align-items: center;
   gap: 10px;
@@ -77,10 +89,15 @@
   font-weight: bold;
 }
 
+.medal-item.gold { border-left: 4px solid #ffd700; }
+.medal-item.silver { border-left: 4px solid #c0c0c0; }
+.medal-item.bronze { border-left: 4px solid #cd7f32; }
+
+/* ===== Biography ===== */
 .section-label {
   color: #e50914;
-  font-size: 1.5rem;
-  margin-bottom: 15px;
+  font-size: 1.4rem;
+  margin-bottom: 12px;
   text-transform: uppercase;
   letter-spacing: 1px;
 }
@@ -88,5 +105,25 @@
 .bio-text {
   color: #cccccc;
   line-height: 1.8;
-  font-size: 1.1rem;
+  font-size: 1.05rem;
+  max-width: 90%;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  .athlete-hero-section {
+    padding: 30px;
+  }
+
+  .athlete-name-title {
+    font-size: 2.4rem;
+  }
+
+  .medal-grid {
+    flex-wrap: wrap;
+  }
+
+  .bio-text {
+    max-width: 100%;
+  }
 }

@@ -89,10 +89,9 @@ function Countries() {
   const handleSelectSuggestion = (countryName) => {
     setSearchQuery(countryName);
     setShowSuggestions(false);
-    setCurrentPage(1); // Reset to first page on search
+    setCurrentPage(1); 
   };
 
-  // ✅ Pagination logic
   const totalPages = Math.ceil(sortedCountries.length / countriesPerPage);
   const startIndex = (currentPage - 1) * countriesPerPage;
   const paginatedCountries = sortedCountries.slice(
@@ -100,7 +99,6 @@ function Countries() {
     startIndex + countriesPerPage
   );
 
-  // ✅ Loading UI
   if (loading) {
     return (
       <Container className="text-center" style={{ paddingTop: "100px" }}>

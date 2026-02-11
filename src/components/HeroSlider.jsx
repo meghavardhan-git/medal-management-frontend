@@ -67,7 +67,7 @@ function HeroSlider() {
           style={{
             height: "65vh",
             backgroundImage:
-              "linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('https://images.unsplash.com/photo-1509228468518-180dd4864904')",
+              "linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.6)), url('/images/bootstap_im2.jpg')",
             backgroundSize: "cover",
             backgroundPosition: "center",
             display: "flex",
