@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { Container, Row, Col, Card, Spinner } from "react-bootstrap";
+import { Container, Row, Col, Card, Spinner, Button } from "react-bootstrap";
 
 import { Pie, Bar } from "react-chartjs-2";
 import {
@@ -16,7 +16,6 @@ import {
 import { getSportDetails } from "../services/api";
 import { countryImages } from "../utils/countryImages";
 import "../styles/cards.css";
-import { color } from "chart.js/helpers";
 
 ChartJS.register(
   ArcElement,
@@ -27,16 +26,43 @@ ChartJS.register(
   BarElement
 );
 
+/* ------------------
+   Favorites Helpers
+-------------------*/
+const FAVORITES_KEY = "favoriteSports";
+
+const getFavorites = () =>
+  JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+
+const isFavorite = (sport) =>
+  getFavorites().includes(sport);
+
+const toggleFavorite = (sport) => {
+  const favorites = getFavorites();
+  const exists = favorites.includes(sport);
+
+  const updated = exists
+    ? favorites.filter((s) => s !== sport)
+    : [...favorites, sport];
+
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+  return !exists;
+};
+
 function SportDetails() {
   const { sport } = useParams();
   const navigate = useNavigate();
 
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [favorite, setFavorite] = useState(false);
 
   useEffect(() => {
     getSportDetails(sport)
-      .then(setData)
+      .then((res) => {
+        setData(res);
+        setFavorite(isFavorite(sport));
+      })
       .catch((err) => console.error("Sport details error:", err))
       .finally(() => setLoading(false));
   }, [sport]);
@@ -95,7 +121,21 @@ function SportDetails() {
 
   return (
     <Container style={{ paddingTop: "100px", paddingBottom: "60px" }}>
-      <h2 className="text-white mb-4">{sport}</h2>
+      <h2 className="text-white mb-3">{sport}</h2>
+
+      {/* ⭐ FAVORITE BUTTON */}
+      <Button
+        variant={favorite ? "outline-danger" : "outline-light"}
+        className="mb-4 px-4 py-2"
+        onClick={() => {
+          const newState = toggleFavorite(sport);
+          setFavorite(newState);
+        }}
+      >
+        {favorite
+          ? "❤️ Remove from Favorites"
+          : "🤍 Add to Favorites"}
+      </Button>
 
       {/* =======================
            CHARTS

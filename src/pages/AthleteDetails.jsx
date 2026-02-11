@@ -4,6 +4,36 @@ import { fetchJson, fetchAthleteWiki } from "../services/api";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import "../styles/AthleteDetails.css";
 
+/* ------------------
+   Favorites Helpers
+-------------------*/
+const FAVORITES_KEY = "favoriteAthletes";
+
+const getFavorites = () =>
+  JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
+
+const isFavorite = (athlete) =>
+  getFavorites().some(
+    (a) => a.name === athlete.name && a.sport === athlete.sport
+  );
+
+const toggleFavorite = (athlete) => {
+  const favorites = getFavorites();
+
+  const exists = favorites.some(
+    (a) => a.name === athlete.name && a.sport === athlete.sport
+  );
+
+  const updated = exists
+    ? favorites.filter(
+        (a) => !(a.name === athlete.name && a.sport === athlete.sport)
+      )
+    : [...favorites, athlete];
+
+  localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
+  return !exists;
+};
+
 function AthleteDetails() {
   const { name, sport } = useParams();
   const navigate = useNavigate();
@@ -12,6 +42,7 @@ function AthleteDetails() {
   const [wikiData, setWikiData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [favorite, setFavorite] = useState(false);
 
   useEffect(() => {
     const loadAthleteData = async () => {
@@ -19,7 +50,6 @@ function AthleteDetails() {
         setLoading(true);
         setError(null);
 
-        // ===== 1️⃣ Fetch Kaggle athlete data =====
         const pathName =
           encodeURIComponent(name || "") +
           (sport ? `/${encodeURIComponent(sport)}` : "");
@@ -29,16 +59,14 @@ function AthleteDetails() {
         );
 
         setAthlete(athleteData);
+        setFavorite(isFavorite(athleteData));
 
-        // ===== 2️⃣ Fetch Wikipedia data using shared API function =====
         try {
           const wikiJson = await fetchAthleteWiki(athleteData.name);
           setWikiData(wikiJson);
         } catch {
-          // Wiki failing should NOT break page
           setWikiData(null);
         }
-
       } catch (err) {
         setError(err.message);
       } finally {
@@ -117,6 +145,20 @@ function AthleteDetails() {
               <span>|</span>
               <span className="country-text">{athlete.country}</span>
             </div>
+
+            {/* ⭐ FAVORITE BUTTON */}
+            <Button
+              variant={favorite ? "outline-danger" : "outline-light"}
+              className="mt-3 mb-4 px-4 py-2"
+              onClick={() => {
+                const newState = toggleFavorite(athlete);
+                setFavorite(newState);
+              }}
+            >
+              {favorite
+                ? "❤️ Remove from Favorites"
+                : "🤍 Add to Favorites"}
+            </Button>
 
             {/* Medals */}
             <div className="medal-grid">
