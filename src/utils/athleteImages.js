@@ -1,29 +1,55 @@
+// athleteImages.js
+
 export const athleteImages = {
-  // Gold Medalists
-  "Michael Phelps": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3a/Michael_Phelps_Rio_2016.jpg/320px-Michael_Phelps_Rio_2016.jpg",
-  "Ray Ewry": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Ray_Ewry.jpg/320px-Ray_Ewry.jpg",
-  "Paavo Nurmi": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/Paavo_Nurmi_1920.jpg/320px-Paavo_Nurmi_1920.jpg",
-  "Larysa Latynina": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Larisa_Latynina_1964.jpg/320px-Larisa_Latynina_1964.jpg",
-  "Carl Lewis": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Carl_Lewis_1984.jpg/320px-Carl_Lewis_1984.jpg",
-  
-  // Silver/Bronze Medalists
-  "Aleksandr Dityatin": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/Alexander_Dityatin.jpg/320px-Alexander_Dityatin.jpg",
-  "Yang Yang": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Yang_Yang_%28A%29.jpg/320px-Yang_Yang_%28A%29.jpg",
-  "Mikhail Voronin": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Mikhail_Voronin_1967.jpg/320px-Mikhail_Voronin_1967.jpg",
-  "Aleksey Nemov": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Alexei_Nemov_2012.jpg/320px-Alexei_Nemov_2012.jpg",
-  "Merlene Ottey": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Merlene_Ottey_2012.jpg/320px-Merlene_Ottey_2012.jpg",
-  "Franziska van Almsick": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Franziska_van_Almsick_2013.jpg/320px-Franziska_van_Almsick_2013.jpg"
+  // 🥇 Top Gold Medal Athletes
+  "Michael Fred Phelps, II":
+    "https://tse4.mm.bing.net/th/id/OIP.kADYKgu8fc9FzmQ9CXGzJQHaE7?rs=1&pid=ImgDetMain&o=7&rm=3",
+  "Raymond Clarence \"Ray\" Ewry":
+    "https://tse3.mm.bing.net/th/id/OIP.3BOM_BfimqiQx-rXgNU73QHaE7?rs=1&pid=ImgDetMain&o=7&rm=3",
+
+  "Paavo Johannes Nurmi":
+    "https://tse4.mm.bing.net/th/id/OIP.9HnwX7cwzMwqxs7vE3yATgHaDc?rs=1&pid=ImgDetMain&o=7&rm=3",
+
+  "Frederick Carlton \"Carl\" Lewis":
+    "https://tse3.mm.bing.net/th/id/OIP.xYaXyFWYezMnAqXEQ7HVawHaHa?rs=1&pid=ImgDetMain&o=7&rm=3",
+
+  "Mark Andrew Spitz":
+    "https://alchetron.com/cdn/mark-spitz-8b68e422-373d-4145-957f-6e6ea5479e2-resize-750.jpeg",
+
+  // 🥈 Top Silver Medal Athletes
+  "Shirley Frances Babashoff":
+    "https://tse4.mm.bing.net/th/id/OIP.RYKQdxnFqvica41nrTnpCwHaE7?rs=1&pid=ImgDetMain&o=7&rm=3",
+
+  "Mikhail Yakovlevich Voronin":
+    "https://d2a3o6pzho379u.cloudfront.net/29183.jpg",
+
+  // ✅ Fixed Yang Yang (Short Track Speed Skater)
+  "Yang Yang":
+    "https://th.bing.com/th/id/OIP.9oWOCMHk28dcZZKaT7YGoAAAAA?w=246&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+
+  "Aleksandr Nikolayevich Dityatin":
+    "https://th.bing.com/th/id/OIP.nAM_I7NHI4PvhR4kYTdsewHaEK?w=310&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3",
+
+  "Dagmar Hase":
+    "https://c8.alamy.com/comp/2NF2P33/german-swimmer-dagmar-hase-shows-off-the-silver-medal-she-won-in-the-womens-200m-backstroke-during-the-olympic-summer-games-in-barcelona-spain-july-31-1992-ap-photodenis-paquin-2NF2P33.jpg",
+
+  // 🥉 Top Bronze Medal Athletes
+  "Aleksey Yuryevich Nemov":
+    "https://tse3.mm.bing.net/th/id/OIP.WwzO05Kyb58gGRvYS_VsLAHaE8?rs=1&pid=ImgDetMain&o=7&rm=3",
+
+  "Franziska van Almsick":
+    "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/Franziska_van_Almsick_-_2019_%28cropped%29.jpg/330px-Franziska_van_Almsick_-_2019_%28cropped%29.jpg",
+
+  "Merlene Joyce Ottey-Page":
+    "https://tse2.mm.bing.net/th/id/OIP.moon0xCT23KeXX215uEi8QHaGB?rs=1&pid=ImgDetMain&o=7&rm=3",
+
+  "Harri Tapani Kirvesniemi":
+    "https://i.ytimg.com/vi/j9QcfVevv84/maxresdefault.jpg",
+
+  "Heikki Ilmari Savolainen":
+    "https://th.bing.com/th/id/OIP.WQIVdQPemJfKJyr4z6sQ2QHaJ3?w=127&h=180&c=7&r=0&o=7&dpr=1.3&pid=1.7&rm=3"
 };
 
-// Build a lowercase map for tolerant lookups (avoids rebuilding per call)
-const _athleteImagesLower = Object.fromEntries(
-  Object.entries(athleteImages).map(([k, v]) => [k.trim().toLowerCase(), v])
-);
-
-export function getAthleteImage(name) {
-  if (!name) return undefined;
-  const key = name.trim();
-  if (athleteImages[key]) return athleteImages[key];
-  const lower = key.toLowerCase();
-  return _athleteImagesLower[lower];
-}
+export const getAthleteImage = (name) => {
+  return athleteImages[name] || "/images/fallback-card.png";
+};

@@ -9,6 +9,7 @@ import {
 } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
 import { getSports } from "../services/api";
+import { sportImages } from "../utils/sportImages";
 import "../styles/cards.css";
 import "../styles/searchBar.css";
 
@@ -75,7 +76,7 @@ function Sports() {
             key={s.sport}
             className="mb-4 netflix-card-container"
           >
-            {/* Netflix zoom card */}
+            {/* 🎬 Netflix-style zoom card */}
             <Card
               className="netflix-zoom-card"
               onClick={() =>
@@ -83,7 +84,7 @@ function Sports() {
               }
             >
               <Card.Img
-                src="/images/fallback-card.png"
+                src={sportImages[s.sport] || "/images/fallback-card.png"}
                 alt={s.sport}
                 style={{
                   height: "160px",
@@ -102,7 +103,13 @@ function Sports() {
               >
                 <Card.Title
                   className="text-white text-center"
-                  style={{ fontSize: "1rem", marginBottom: 0 }}
+                  style={{
+                    fontSize: "1rem",
+                    marginBottom: 0,
+                    whiteSpace: "nowrap",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                  }}
                 >
                   {s.sport}
                 </Card.Title>

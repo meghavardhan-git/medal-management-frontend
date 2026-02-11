@@ -1,19 +1,58 @@
-import { Container, Row, Col, Card, Form, Button, Spinner } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Card,
+  Form,
+  Button,
+  Spinner,
+} from "react-bootstrap";
 import { useState, useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { getAthletes } from "../services/api";
+import { getAthleteImage } from "../utils/athleteImages";
+import { sportImages } from "../utils/sportImages";
 
 function Athletes() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sortBy = searchParams.get("sort");
 
-  // State
   const [athletes, setAthletes] = useState([]);
   const [page, setPage] = useState(1);
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
+
+  // ✅ Case-insensitive sport fallback
+  const getSportImage = (sport) => {
+    if (!sport) return null;
+
+    const match = Object.keys(sportImages).find(
+      (key) => key.toLowerCase() === sport.toLowerCase()
+    );
+
+    return match ? sportImages[match] : null;
+  };
+
+  // ✅ Image priority logic
+  const resolveImage = (athlete) => {
+    // 1️⃣ If backend provides image
+    if (athlete.image) return athlete.image;
+
+    // 2️⃣ Try athlete image map
+    const athleteImg = getAthleteImage(athlete.name);
+    if (athleteImg && !athleteImg.includes("fallback-card")) {
+      return athleteImg;
+    }
+
+    // 3️⃣ Try sport fallback
+    const sportImg = getSportImage(athlete.sport);
+    if (sportImg) return sportImg;
+
+    // 4️⃣ Final fallback
+    return "/images/fallback-card.png";
+  };
 
   useEffect(() => {
     const fetchAthletes = async () => {
@@ -25,7 +64,7 @@ function Athletes() {
           sort: sortBy,
         });
 
-        const newAthletes = response.data;
+        const newAthletes = response.data || response;
 
         setAthletes((prev) =>
           page === 1 ? newAthletes : [...prev, ...newAthletes]
@@ -96,12 +135,14 @@ function Athletes() {
             >
               <Card.Img
                 variant="top"
-                src={athlete.image || "/images/fallback-card.png"}
+                src={resolveImage(athlete)}
                 alt={athlete.name}
                 style={{ height: "200px", objectFit: "cover" }}
                 onError={(e) => {
                   e.target.onerror = null;
-                  e.target.src = "/images/fallback-card.png";
+                  e.target.src =
+                    getSportImage(athlete.sport) ||
+                    "/images/fallback-card.png";
                 }}
               />
 
@@ -109,20 +150,28 @@ function Athletes() {
                 <Card.Title style={{ color: "white" }}>
                   {athlete.name}
                 </Card.Title>
+
                 <p style={{ color: "#aaa", fontSize: "0.9rem" }}>
                   {athlete.sport} • {athlete.country}
                 </p>
-                <div style={{ display: "flex", gap: "12px", fontWeight: "600" }}>
-                    <span style={{ color: "#FFD700" }}>
-                      🥇 {athlete.gold || 0}
-                    </span>
-                    <span style={{ color: "#C0C0C0" }}>
-                      🥈 {athlete.silver || 0}
-                    </span>
-                    <span style={{ color: "#CD7F32" }}>
-                      🥉 {athlete.bronze || 0}
-                    </span>
-                  </div>
+
+                <div
+                  style={{
+                    display: "flex",
+                    gap: "12px",
+                    fontWeight: "600",
+                  }}
+                >
+                  <span style={{ color: "#FFD700" }}>
+                    🥇 {athlete.gold || 0}
+                  </span>
+                  <span style={{ color: "#C0C0C0" }}>
+                    🥈 {athlete.silver || 0}
+                  </span>
+                  <span style={{ color: "#CD7F32" }}>
+                    🥉 {athlete.bronze || 0}
+                  </span>
+                </div>
               </Card.Body>
             </Card>
           </Col>

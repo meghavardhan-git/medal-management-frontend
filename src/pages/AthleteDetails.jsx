@@ -1,6 +1,6 @@
 import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { fetchJson } from "../services/api";
+import { fetchJson, fetchAthleteWiki } from "../services/api";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
 import "../styles/AthleteDetails.css";
 
@@ -9,16 +9,44 @@ function AthleteDetails() {
   const navigate = useNavigate();
 
   const [athlete, setAthlete] = useState(null);
+  const [wikiData, setWikiData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
   useEffect(() => {
-    const pathName =
-      encodeURIComponent(name || "") +
-      (sport ? `/${encodeURIComponent(sport)}` : "");
+    const loadAthleteData = async () => {
+      try {
+        setLoading(true);
+        setError(null);
 
-    fetchJson(`/athlete-details/${pathName}`)
-      .then(setAthlete)
-      .catch((err) => setError(err.message));
+        // ===== 1️⃣ Fetch Kaggle athlete data =====
+        const pathName =
+          encodeURIComponent(name || "") +
+          (sport ? `/${encodeURIComponent(sport)}` : "");
+
+        const athleteData = await fetchJson(
+          `/athlete-details/${pathName}`
+        );
+
+        setAthlete(athleteData);
+
+        // ===== 2️⃣ Fetch Wikipedia data using shared API function =====
+        try {
+          const wikiJson = await fetchAthleteWiki(athleteData.name);
+          setWikiData(wikiJson);
+        } catch {
+          // Wiki failing should NOT break page
+          setWikiData(null);
+        }
+
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadAthleteData();
   }, [name, sport]);
 
   /* ===== Error State ===== */
@@ -38,7 +66,7 @@ function AthleteDetails() {
   }
 
   /* ===== Loading State ===== */
-  if (!athlete) {
+  if (loading || !athlete) {
     return (
       <Container className="text-center" style={{ paddingTop: "150px" }}>
         <Spinner animation="border" variant="danger" />
@@ -61,13 +89,16 @@ function AthleteDetails() {
           ← Back to Athletes
         </Button>
 
-        {/* Hero Section */}
         <Row className="athlete-hero-section align-items-center">
           {/* Image */}
           <Col md={5} lg={4} className="text-center mb-4 mb-md-0">
             <div className="athlete-image-wrapper">
               <img
-                src={athlete.image || "/images/fallback-image.png"}
+                src={
+                  wikiData?.image ||
+                  athlete.image ||
+                  "/images/fallback-image.png"
+                }
                 alt={athlete.name}
                 className="athlete-profile-img"
                 onError={(e) => {
@@ -109,9 +140,21 @@ function AthleteDetails() {
             <div className="biography-section">
               <h3 className="section-label">Biography</h3>
               <p className="bio-text">
-                {athlete.highlight ||
+                {wikiData?.summary ||
+                  athlete.highlight ||
                   "Olympic medalist with outstanding international performance."}
               </p>
+
+              {wikiData?.pageUrl && (
+                <a
+                  href={wikiData.pageUrl}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="wiki-link"
+                >
+                  View Full Profile on Wikipedia →
+                </a>
+              )}
             </div>
           </Col>
         </Row>
