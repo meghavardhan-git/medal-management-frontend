@@ -52,6 +52,15 @@ export const getCountrySummary = (noc) =>
 export const getSportDetails = (sport) =>
   fetchJson(`/sports/${encodeURIComponent(sport)}`);
 
-// ✅ Fixed Wiki API
 export const fetchAthleteWiki = (name) =>
   fetchJson(`/wiki/athlete/${encodeURIComponent(name)}`);
+
+// Country medal timeline
+export const getCountryMedalTimeline = (noc, medal) =>
+  fetchJson(`/countries/${noc}/medals/${medal}`);
+
+/// src/services/api.js
+
+export const getAthleteMedalTimeline = (name, medalType) =>
+  fetchJson(`/athlete-details/${encodeURIComponent(name)}/timeline/${medalType}`);
+

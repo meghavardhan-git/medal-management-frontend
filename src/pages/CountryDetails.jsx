@@ -9,9 +9,10 @@ import {
   Legend,
 } from "chart.js";
 
-import { getCountries, getCountrySummary } from "../services/api";
+import { getCountries, getCountrySummary, getCountryMedalTimeline } from "../services/api";
 import { countryImages } from "../utils/countryImages";
 import "../styles/CountryDetails.css";
+import MedalTimelineModal from "../components/MedalTimelineModal";
 
 ChartJS.register(ArcElement, Tooltip, Legend);
 
@@ -43,11 +44,16 @@ function CountryDetails() {
 
   const [country, setCountry] = useState(null);
   const [favorite, setFavorite] = useState(false);
-
   const [summary, setSummary] = useState("");
   const [loading, setLoading] = useState(true);
   const [summaryLoading, setSummaryLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Modal & Timeline State
+  const [showModal, setShowModal] = useState(false);
+  const [timelineData, setTimelineData] = useState([]);
+  const [timelineLoading, setTimelineLoading] = useState(false);
+  const [selectedMedal, setSelectedMedal] = useState("");
 
   // ------------------
   // Load country data
@@ -81,13 +87,12 @@ function CountryDetails() {
   }, [noc]);
 
   // ------------------
-  // Load AI summary
+  // Actions
   // ------------------
   const handleLoadSummary = async () => {
     try {
       setSummaryLoading(true);
       setSummary("");
-
       const res = await getCountrySummary(noc);
       setSummary(res.summary);
     } catch (err) {
@@ -98,9 +103,22 @@ function CountryDetails() {
     }
   };
 
-  // ------------------
-  // Loading / Error UI
-  // ------------------
+  const openMedalTimeline = async (medal) => {
+    try {
+      setSelectedMedal(medal);
+      setShowModal(true);
+      setTimelineLoading(true);
+
+      const data = await getCountryMedalTimeline(noc, medal);
+      setTimelineData(data);
+    } catch (err) {
+      console.error(err);
+      setTimelineData([]);
+    } finally {
+      setTimelineLoading(false);
+    }
+  };
+
   if (loading) {
     return (
       <div className="loader-container">
@@ -109,15 +127,9 @@ function CountryDetails() {
     );
   }
 
-  if (error) {
-    return <div className="error-message">{error}</div>;
-  }
-
+  if (error) return <div className="error-message">{error}</div>;
   if (!country) return null;
 
-  // ------------------
-  // Pie chart config
-  // ------------------
   const pieData = {
     labels: ["Gold", "Silver", "Bronze"],
     datasets: [
@@ -129,9 +141,6 @@ function CountryDetails() {
     ],
   };
 
-  // ------------------
-  // UI
-  // ------------------
   return (
     <Container className="country-details-container">
       <Card className="details-card">
@@ -150,13 +159,19 @@ function CountryDetails() {
               <h2 className="country-name">{country.country}</h2>
               <p className="noc-tag">NOC Code: {country.noc}</p>
 
+              {/* 3.4 Clickable Medal Section */}
               <div className="medal-count">
-                <span className="medal">🥇 {country.gold}</span>
-                <span className="medal">🥈 {country.silver}</span>
-                <span className="medal">🥉 {country.bronze}</span>
+                <span className="medal clickable" onClick={() => openMedalTimeline("gold")}>
+                  🥇 {country.gold}
+                </span>
+                <span className="medal clickable" onClick={() => openMedalTimeline("silver")}>
+                  🥈 {country.silver}
+                </span>
+                <span className="medal clickable" onClick={() => openMedalTimeline("bronze")}>
+                  🥉 {country.bronze}
+                </span>
               </div>
 
-              {/* ⭐ FAVORITE BUTTON (RESTORED) */}
               <Button
                 variant={favorite ? "outline-danger" : "outline-light"}
                 className="me-3 mb-3 py-2"
@@ -168,7 +183,6 @@ function CountryDetails() {
                 {favorite ? "❤️ Remove from Favorites" : "🤍 Add to Favorites"}
               </Button>
 
-              {/* 🤖 AI BUTTON */}
               <Button
                 variant="danger"
                 className="ai-button mb-3"
@@ -201,6 +215,15 @@ function CountryDetails() {
           )}
         </Row>
       </Card>
+
+      {/* 3.5 Medal Timeline Modal */}
+      <MedalTimelineModal
+        show={showModal}
+        onHide={() => setShowModal(false)}
+        title={`${country.country} – ${selectedMedal.toUpperCase()} Medal History`}
+        data={timelineData}
+        loading={timelineLoading}
+      />
     </Container>
   );
 }
