@@ -3,7 +3,10 @@ import { Link, useNavigate } from "react-router-dom";
 
 function Header() {
   const navigate = useNavigate();
-const isLoggedIn = !!localStorage.getItem("token");
+
+  const token = localStorage.getItem("token");
+  const name = localStorage.getItem("name");
+  const isLoggedIn = !!token;
 
   return (
     <Navbar bg="dark" variant="dark" expand="lg" fixed="top">
@@ -25,23 +28,35 @@ const isLoggedIn = !!localStorage.getItem("token");
           </Nav>
 
           <Nav>
-  {isLoggedIn ? (
-    <Nav.Link
-      onClick={() => {
-        localStorage.removeItem("token");
-        navigate("/login");
-      }}
-    >
-      Logout
-    </Nav.Link>
-  ) : (
-    <>
-      <Nav.Link onClick={() => navigate("/login")}>Login</Nav.Link>
-      <Nav.Link onClick={() => navigate("/register")}>Register</Nav.Link>
-    </>
-  )}
-</Nav>
+            {isLoggedIn ? (
+              <>
+                {/* 👇 Welcome Name */}
+                <Navbar.Text style={{ color: "white", marginRight: "15px" }}>
+                  Welcome, <strong>{name}</strong>
+                </Navbar.Text>
 
+                {/* 👇 Logout */}
+                <Nav.Link
+                  onClick={() => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("name");
+                    navigate("/login");
+                  }}
+                >
+                  Logout
+                </Nav.Link>
+              </>
+            ) : (
+              <>
+                <Nav.Link onClick={() => navigate("/login")}>
+                  Login
+                </Nav.Link>
+                <Nav.Link onClick={() => navigate("/register")}>
+                  Register
+                </Nav.Link>
+              </>
+            )}
+          </Nav>
 
         </Navbar.Collapse>
       </Container>

@@ -38,6 +38,7 @@ function Login() {
 
       const data = await response.json();
       localStorage.setItem("token", data.token);
+      localStorage.setItem("name", data.name);
       navigate("/home", { replace: true });
     } catch (err) {
       setError("Server error. Please try again later.");
