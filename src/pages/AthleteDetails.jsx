@@ -2,6 +2,8 @@ import { useParams, useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { fetchJson, fetchAthleteWiki } from "../services/api";
 import { Container, Row, Col, Button, Spinner } from "react-bootstrap";
+import Footer from "../components/Footer";
+import { sportImages } from "../utils/sportImages";
 import "../styles/AthleteDetails.css";
 
 /* ------------------
@@ -32,6 +34,21 @@ const toggleFavorite = (athlete) => {
 
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
   return !exists;
+};
+
+/* ------------------
+   Image Helpers
+-------------------*/
+
+// ✅ Case-insensitive sport image resolver
+const getSportImage = (sport) => {
+  if (!sport) return null;
+
+  const match = Object.keys(sportImages).find(
+    (key) => key.toLowerCase() === sport.toLowerCase()
+  );
+
+  return match ? sportImages[match] : null;
 };
 
 function AthleteDetails() {
@@ -80,128 +97,144 @@ function AthleteDetails() {
   /* ===== Error State ===== */
   if (error) {
     return (
-      <Container className="text-center" style={{ paddingTop: "150px" }}>
-        <h3 style={{ color: "#ff4d4d" }}>Error: {error}</h3>
-        <Button
-          variant="outline-light"
-          className="mt-3"
-          onClick={() => navigate(-1)}
-        >
-          Go Back
-        </Button>
-      </Container>
+      <>
+        <Container className="text-center" style={{ paddingTop: "150px" }}>
+          <h3 style={{ color: "#ff4d4d" }}>Error: {error}</h3>
+          <Button
+            variant="outline-light"
+            className="mt-3"
+            onClick={() => navigate(-1)}
+          >
+            Go Back
+          </Button>
+        </Container>
+        <Footer />
+      </>
     );
   }
 
   /* ===== Loading State ===== */
   if (loading || !athlete) {
     return (
-      <Container className="text-center" style={{ paddingTop: "150px" }}>
-        <Spinner animation="border" variant="danger" />
-        <p className="mt-3" style={{ color: "white" }}>
-          Loading athlete profile...
-        </p>
-      </Container>
+      <>
+        <Container className="text-center" style={{ paddingTop: "150px" }}>
+          <Spinner animation="border" variant="danger" />
+          <p className="mt-3" style={{ color: "white" }}>
+            Loading athlete profile...
+          </p>
+        </Container>
+        <Footer />
+      </>
     );
   }
 
+  // ✅ FINAL IMAGE RESOLUTION ORDER
+  const resolvedImage =
+    wikiData?.image ||
+    athlete.image ||
+    getSportImage(athlete.sport) ||
+    "/images/fallback-card.png";
+
   return (
-    <div className="athlete-detail-page">
-      <Container>
-        {/* Back Button */}
-        <Button
-          variant="link"
-          className="back-button"
-          onClick={() => navigate(-1)}
-        >
-          ← Back to Athletes
-        </Button>
+    <>
+      <div className="athlete-detail-page">
+        <Container>
+          {/* Back Button */}
+          <Button
+            variant="link"
+            className="back-button"
+            onClick={() => navigate(-1)}
+          >
+            ← Back to Athletes
+          </Button>
 
-        <Row className="athlete-hero-section align-items-center">
-          {/* Image */}
-          <Col md={5} lg={4} className="text-center mb-4 mb-md-0">
-            <div className="athlete-image-wrapper">
-              <img
-                src={
-                  wikiData?.image ||
-                  athlete.image ||
-                  "/images/fallback-image.png"
-                }
-                alt={athlete.name}
-                className="athlete-profile-img"
-                onError={(e) => {
-                  e.target.src = "/images/fallback-card.png";
+          <Row className="athlete-hero-section align-items-center">
+            {/* Image */}
+            <Col md={5} lg={4} className="text-center mb-4 mb-md-0">
+              <div className="athlete-image-wrapper">
+                <img
+                  src={resolvedImage}
+                  alt={athlete.name}
+                  className="athlete-profile-img"
+                  onError={(e) => {
+                    e.target.src =
+                      getSportImage(athlete.sport) ||
+                      "/images/fallback-card.png";
+                  }}
+                />
+              </div>
+            </Col>
+
+            {/* Info */}
+            <Col md={7} lg={8}>
+              <h1 className="athlete-name-title">{athlete.name}</h1>
+
+              <div className="athlete-meta-info">
+                <span className="sport-badge">{athlete.sport}</span>
+                <span>|</span>
+                <span className="country-text">{athlete.country}</span>
+              </div>
+
+              {/* ⭐ FAVORITE BUTTON */}
+              <Button
+                variant={favorite ? "outline-danger" : "outline-light"}
+                className="mt-3 mb-4 px-4 py-2"
+                onClick={() => {
+                  const newState = toggleFavorite(athlete);
+                  setFavorite(newState);
                 }}
-              />
-            </div>
-          </Col>
+              >
+                {favorite
+                  ? "❤️ Remove from Favorites"
+                  : "🤍 Add to Favorites"}
+              </Button>
 
-          {/* Info */}
-          <Col md={7} lg={8}>
-            <h1 className="athlete-name-title">{athlete.name}</h1>
+              {/* Medals */}
+              <div className="medal-grid">
+                <div className="medal-item gold">
+                  <span>🥇</span>
+                  <span>{athlete.medals?.gold ?? 0}</span>
+                </div>
 
-            <div className="athlete-meta-info">
-              <span className="sport-badge">{athlete.sport}</span>
-              <span>|</span>
-              <span className="country-text">{athlete.country}</span>
-            </div>
+                <div className="medal-item silver">
+                  <span>🥈</span>
+                  <span>{athlete.medals?.silver ?? 0}</span>
+                </div>
 
-            {/* ⭐ FAVORITE BUTTON */}
-            <Button
-              variant={favorite ? "outline-danger" : "outline-light"}
-              className="mt-3 mb-4 px-4 py-2"
-              onClick={() => {
-                const newState = toggleFavorite(athlete);
-                setFavorite(newState);
-              }}
-            >
-              {favorite
-                ? "❤️ Remove from Favorites"
-                : "🤍 Add to Favorites"}
-            </Button>
-
-            {/* Medals */}
-            <div className="medal-grid">
-              <div className="medal-item gold">
-                <span>🥇</span>
-                <span>{athlete.medals?.gold ?? 0}</span>
+                <div className="medal-item bronze">
+                  <span>🥉</span>
+                  <span>{athlete.medals?.bronze ?? 0}</span>
+                </div>
               </div>
 
-              <div className="medal-item silver">
-                <span>🥈</span>
-                <span>{athlete.medals?.silver ?? 0}</span>
+              {/* Biography */}
+              <div className="biography-section">
+                <h3 className="section-label">Biography</h3>
+                <p className="bio-text">
+                  {wikiData?.summary ||
+                    athlete.highlight ||
+                    "Olympic medalist with outstanding international performance."}
+                </p>
+
+                {wikiData?.pageUrl && (
+                  <a
+                    href={wikiData.pageUrl}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="wiki-link"
+                  >
+                    View Full Profile on Wikipedia →
+                  </a>
+                )}
               </div>
+            </Col>
+          </Row>
+        </Container>
+      </div>
 
-              <div className="medal-item bronze">
-                <span>🥉</span>
-                <span>{athlete.medals?.bronze ?? 0}</span>
-              </div>
-            </div>
-
-            {/* Biography */}
-            <div className="biography-section">
-              <h3 className="section-label">Biography</h3>
-              <p className="bio-text">
-                {wikiData?.summary ||
-                  athlete.highlight ||
-                  "Olympic medalist with outstanding international performance."}
-              </p>
-
-              {wikiData?.pageUrl && (
-                <a
-                  href={wikiData.pageUrl}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="wiki-link"
-                >
-                  View Full Profile on Wikipedia →
-                </a>
-              )}
-            </div>
-          </Col>
-        </Row>
-      </Container>
-    </div>
+      {/* ✅ Footer Added */}
+      <Footer />
+    </>
   );
 }
 

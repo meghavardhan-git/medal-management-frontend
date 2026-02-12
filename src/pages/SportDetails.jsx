@@ -15,6 +15,8 @@ import {
 
 import { getSportDetails } from "../services/api";
 import { countryImages } from "../utils/countryImages";
+import { sportImages } from "../utils/sportImages";
+import Footer from "../components/Footer";
 import "../styles/cards.css";
 
 ChartJS.register(
@@ -34,8 +36,7 @@ const FAVORITES_KEY = "favoriteSports";
 const getFavorites = () =>
   JSON.parse(localStorage.getItem(FAVORITES_KEY)) || [];
 
-const isFavorite = (sport) =>
-  getFavorites().includes(sport);
+const isFavorite = (sport) => getFavorites().includes(sport);
 
 const toggleFavorite = (sport) => {
   const favorites = getFavorites();
@@ -47,6 +48,19 @@ const toggleFavorite = (sport) => {
 
   localStorage.setItem(FAVORITES_KEY, JSON.stringify(updated));
   return !exists;
+};
+
+/* ------------------
+   Image Helpers
+-------------------*/
+const getSportImage = (sport) => {
+  if (!sport) return null;
+
+  const match = Object.keys(sportImages).find(
+    (key) => key.toLowerCase() === sport.toLowerCase()
+  );
+
+  return match ? sportImages[match] : null;
 };
 
 function SportDetails() {
@@ -69,17 +83,20 @@ function SportDetails() {
 
   if (loading) {
     return (
-      <div className="loader-container">
-        <Spinner animation="border" variant="danger" />
-      </div>
+      <>
+        <div className="loader-container">
+          <Spinner animation="border" variant="danger" />
+        </div>
+        <Footer />
+      </>
     );
   }
 
   if (!data) return null;
 
-  // =======================
-  // PIE: Medal distribution
-  // =======================
+  /* =======================
+     PIE: Medal distribution
+     ======================= */
   const totalGold = data.topCountries.reduce((a, c) => a + c.gold, 0);
   const totalSilver = data.topCountries.reduce((a, c) => a + c.silver, 0);
   const totalBronze = data.topCountries.reduce((a, c) => a + c.bronze, 0);
@@ -95,9 +112,9 @@ function SportDetails() {
     ],
   };
 
-  // =======================
-  // BAR: Country comparison
-  // =======================
+  /* =======================
+     BAR: Country comparison
+     ======================= */
   const barData = {
     labels: data.topCountries.map((c) => c.country),
     datasets: [
@@ -120,117 +137,144 @@ function SportDetails() {
   };
 
   return (
-    <Container style={{ paddingTop: "100px", paddingBottom: "60px" }}>
-      <h2 className="text-white mb-3">{sport}</h2>
+    <>
+      <Container style={{ paddingTop: "100px", paddingBottom: "60px" }}>
+        <h2 className="text-white mb-3">{sport}</h2>
 
-      {/* ⭐ FAVORITE BUTTON */}
-      <Button
-        variant={favorite ? "outline-danger" : "outline-light"}
-        className="mb-4 px-4 py-2"
-        onClick={() => {
-          const newState = toggleFavorite(sport);
-          setFavorite(newState);
-        }}
-      >
-        {favorite
-          ? "❤️ Remove from Favorites"
-          : "🤍 Add to Favorites"}
-      </Button>
+        {/* ⭐ FAVORITE BUTTON */}
+        <Button
+          variant={favorite ? "outline-danger" : "outline-light"}
+          className="mb-4 px-4 py-2"
+          onClick={() => {
+            const newState = toggleFavorite(sport);
+            setFavorite(newState);
+          }}
+        >
+          {favorite
+            ? "❤️ Remove from Favorites"
+            : "🤍 Add to Favorites"}
+        </Button>
 
-      {/* =======================
-           CHARTS
-         ======================= */}
-      <Row className="mb-5">
-        <Col md={5}>
-          <h5 className="text-center text-danger mb-3">
-            Medal Distribution
-          </h5>
-          <Pie data={pieData} />
-        </Col>
-
-        <Col md={7}>
-          <h5 className="text-center text-danger mb-3">
-            Top Countries Comparison
-          </h5>
-          <Bar
-            data={barData}
-            options={{
-              responsive: true,
-              plugins: { legend: { position: "bottom" } },
-            }}
-          />
-        </Col>
-      </Row>
-
-      {/* =======================
-           TOP COUNTRIES
-         ======================= */}
-      <h4 className="text-white mb-3">Top Countries</h4>
-      <Row className="mb-5">
-        {data.topCountries.map((c) => (
-          <Col md={3} sm={6} key={c.noc} className="mb-4 netflix-card-container">
-            <Card
-              className="netflix-zoom-card"
-              onClick={() => navigate(`/countries/${c.noc}`)}
-            >
-              <Card.Img
-                src={countryImages[c.noc]}
-                onError={(e) =>
-                  (e.target.src = "/images/fallback-flag.png")
-                }
-                style={{ height: "150px", objectFit: "cover" }}
-              />
-              <Card.Body>
-                <Card.Title className="text-white text-center">
-                  {c.country}
-                </Card.Title>
-                <p className="text-center mb-0" style={{ color: "chocolate" }}>
-                  🥇 {c.gold} 🥈 {c.silver} 🥉 {c.bronze}
-                </p>
-              </Card.Body>
-            </Card>
+        {/* =======================
+             CHARTS
+           ======================= */}
+        <Row className="mb-5">
+          <Col md={5}>
+            <h5 className="text-center text-danger mb-3">
+              Medal Distribution
+            </h5>
+            <Pie data={pieData} />
           </Col>
-        ))}
-      </Row>
 
-      {/* =======================
-           TOP ATHLETES
-         ======================= */}
-      <h4 className="text-white mb-3">Top Athletes</h4>
-      <Row>
-        {data.topAthletes.map((a) => (
-          <Col md={3} sm={6} key={a.name} className="mb-4 netflix-card-container">
-            <Card
-              className="netflix-zoom-card"
-              onClick={() =>
-                navigate(
-                  `/athletes/${encodeURIComponent(a.name)}/${encodeURIComponent(
-                    sport
-                  )}`
-                )
-              }
-            >
-              <Card.Img
-                src={a.image || "/images/fallback-card.png"}
-                onError={(e) =>
-                  (e.target.src = "/images/fallback-card.png")
-                }
-                style={{ height: "150px", objectFit: "cover" }}
-              />
-              <Card.Body>
-                <Card.Title className="text-white">
-                  {a.name}
-                </Card.Title>
-                <p className="text-muted mb-1">{a.country}</p>
-                <p className="mb-0" style={{ color: "chocolate" }}>
-                  🥇 {a.gold} 🥈 {a.silver} 🥉 {a.bronze}
-                </p>
-              </Card.Body>
-            </Card>
+          <Col md={7}>
+            <h5 className="text-center text-danger mb-3">
+              Top Countries Comparison
+            </h5>
+            <Bar
+              data={barData}
+              options={{
+                responsive: true,
+                plugins: { legend: { position: "bottom" } },
+              }}
+            />
           </Col>
-        ))}
-      </Row>
-    </Container>
+        </Row>
+
+        {/* =======================
+             TOP COUNTRIES
+           ======================= */}
+        <h4 className="text-white mb-3">Top Countries</h4>
+        <Row className="mb-5">
+          {data.topCountries.map((c) => (
+            <Col
+              md={3}
+              sm={6}
+              key={c.noc}
+              className="mb-4 netflix-card-container"
+            >
+              <Card
+                className="netflix-zoom-card"
+                onClick={() => navigate(`/countries/${c.noc}`)}
+              >
+                <Card.Img
+                  src={countryImages[c.noc]}
+                  onError={(e) =>
+                    (e.target.src = "/images/fallback-flag.png")
+                  }
+                  style={{ height: "150px", objectFit: "cover" }}
+                />
+                <Card.Body>
+                  <Card.Title className="text-white text-center">
+                    {c.country}
+                  </Card.Title>
+                  <p
+                    className="text-center mb-0"
+                    style={{ color: "chocolate" }}
+                  >
+                    🥇 {c.gold} 🥈 {c.silver} 🥉 {c.bronze}
+                  </p>
+                </Card.Body>
+              </Card>
+            </Col>
+          ))}
+        </Row>
+
+        {/* =======================
+             TOP ATHLETES
+           ======================= */}
+        <h4 className="text-white mb-3">Top Athletes</h4>
+        <Row>
+          {data.topAthletes.map((a) => {
+            const athleteImage =
+              a.image ||
+              getSportImage(sport) ||
+              "/images/fallback-card.png";
+
+            return (
+              <Col
+                md={3}
+                sm={6}
+                key={a.name}
+                className="mb-4 netflix-card-container"
+              >
+                <Card
+                  className="netflix-zoom-card"
+                  onClick={() =>
+                    navigate(
+                      `/athletes/${encodeURIComponent(
+                        a.name
+                      )}/${encodeURIComponent(sport)}`
+                    )
+                  }
+                >
+                  <Card.Img
+                    src={athleteImage}
+                    onError={(e) =>
+                      (e.target.src =
+                        getSportImage(sport) ||
+                        "/images/fallback-card.png")
+                    }
+                    style={{ height: "150px", objectFit: "cover" }}
+                  />
+                  <Card.Body>
+                    <Card.Title className="text-white">
+                      {a.name}
+                    </Card.Title>
+                    <p className="text-muted mb-1">{a.country}</p>
+                    <p className="mb-0" style={{ color: "chocolate" }}>
+                      🥇 {a.gold} 🥈 {a.silver} 🥉 {a.bronze}
+                    </p>
+                  </Card.Body>
+                </Card>
+              </Col>
+            );
+          })}
+        </Row>
+      </Container>
+
+      {/* ✅ Footer */}
+      <Footer />
+    </>
   );
 }
 
